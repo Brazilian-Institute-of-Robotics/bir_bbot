@@ -1,0 +1,21 @@
+<launch>
+
+  <rosparam file="$(find bbot_control)/config/bbot_control.yaml" command="load"/>
+
+  <!-- Set the param that trajectory_execution_manager needs to find the controller plugin -->
+   <arg name="moveit_controller_manager" default="moveit_simple_controller_manager/MoveItSimpleControllerManager" />
+   <param name="moveit_controller_manager" value="$(arg moveit_controller_manager)"/>
+   
+  <!-- load the controllers -->
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+    output="screen" ns="/bbot" args=" joint_state_controller base2right_top_leg_position_controller base2left_top_leg_position_controller
+                                      right_top_leg2bottom_leg_position_controller left_top_leg2bottom_leg_position_controller
+                                      mobile_base_controller"/>
+    
+  <!-- convert joint states to TF transforms for rviz, etc -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+    respawn="false" output="screen">
+    <remap from="/joint_states" to="/bbot/joint_states" />
+  </node>
+
+</launch>

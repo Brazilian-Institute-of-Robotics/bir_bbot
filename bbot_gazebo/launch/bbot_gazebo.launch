@@ -1,0 +1,25 @@
+<launch>
+  
+  <!-- Config -->
+  <arg name="rviz" default="true"/> 
+  <param name="robot_description" textfile="$(find bbot_description)/urdf/bbot.urdf.xacro" />  
+
+  <!-- World -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find bbot_gazebo)/world/bbot.world"/>
+    <arg name="paused" value="true"/>
+  </include>
+  
+  <!-- Spaw Bbot -->
+  <node name="spawn_bbot" pkg="gazebo_ros" type="spawn_model" args="-file $(find bbot_description)/urdf/bbot.urdf.xacro -urdf -z 0.3 -model bbot"/>
+  
+  <!-- Spaw ChArUco -->
+  <!-- <node name="spawn_charuco" pkg="gazebo_ros" type="spawn_model" args="-file $(find bbot_description)/urdf/charuco.urdf.xacro -urdf -y 1.0 -z 1.0 -model charuco"/> -->
+
+  <!-- Control -->
+  <include file="$(find bbot_control)/launch/bbot_control.launch"/>
+
+  <!-- Show in Rviz -->
+  <node if="$(arg rviz)" name="rviz" pkg="rviz" type="rviz" args="-d $(find bbot_description)/rviz/bbot.rviz"/>
+  
+</launch>
