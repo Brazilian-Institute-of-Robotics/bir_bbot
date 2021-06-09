@@ -13,6 +13,10 @@
   <!-- Spaw Bbot -->
   <node name="spawn_bbot" pkg="gazebo_ros" type="spawn_model" args="-file $(find bbot_description)/urdf/bbot.urdf.xacro -urdf -z 0.3 -model bbot"/>
   
+  <!-- Spaw Ramp -->
+  <node name="spawn_ramp" pkg="gazebo_ros" type="spawn_model" args="-file $(find bbot_description)/urdf/ramp.urdf.xacro -urdf -x 1.0 -y -1.0 -z 0.1 -model ramp"/>
+
+
   <!-- Spaw ChArUco -->
   <!-- <node name="spawn_charuco" pkg="gazebo_ros" type="spawn_model" args="-file $(find bbot_description)/urdf/charuco.urdf.xacro -urdf -y 1.0 -z 1.0 -model charuco"/> -->
 
