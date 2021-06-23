@@ -12,9 +12,11 @@
 <!-- LINKS -->
     <link name="main_base">
       <inertial>
-        <origin xyz="0.023151 -0.0 0.069877" />
+        <!-- <origin xyz="0.023151 -0.0 0.069877" /> OLD -->
+        <origin xyz="0.02228462 0.05671578 -0.01906787" rpy="0.0 0 0" />
         <mass value="1.171185"/>
-        <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
+        <!-- <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" /> OLD -->
+        <inertia ixx="0.00249622" ixy="0.00000872" ixz="-0.00002689" iyy="0.00361734" iyz="-0.00004823" izz="0.00381216" />
       </inertial>
       <visual>
         <origin xyz="0.0 0.0 0.0" rpy="1.57 0 0" />
@@ -23,9 +25,10 @@
         </geometry>
       </visual>
       <collision>
-        <origin xyz="0.0 0.0 0.0" rpy="1.57 0 0" />
+        <origin xyz="0.023030 0.017698 0.066007" rpy="0.0 0 0" />
         <geometry>
-          <mesh filename="package://bbot_description/meshes/collision/base.stl"  scale="1 1 1"/>
+          <!-- <mesh filename="package://bbot_description/meshes/collision/base.stl"  scale="1 1 1"/> -->
+          <box size="0.174214 0.139588 0.096376" />
         </geometry>
       </collision>
     </link>
@@ -43,9 +46,11 @@
         </geometry>
       </visual>
       <collision>
-        <origin xyz="-0.025 -0.021 -0.18" rpy="-1.57 -1.57 0" />
+        <!-- <origin xyz="-0.025 -0.021 -0.18" rpy="-1.57 -1.57 0" /> MESH ORIGIN -->
+        <origin xyz="0.031 0 -0.055" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://bbot_description/meshes/collision/right_top_leg.stl"  scale="1 1 1"/>
+          <!-- <mesh filename="package://bbot_description/meshes/collision/right_top_leg.stl"  scale="1 1 1"/> -->
+           <box size="0.065065 0.048933 0.138999" />
         </geometry>
       </collision>
     </link>
@@ -63,9 +68,11 @@
         </geometry>
       </visual>
       <collision>
-        <origin xyz="-0.031 -0.021 -0.19" rpy="-1.57 -1.57 0" />
+        <!-- <origin xyz="-0.031 -0.021 -0.19" rpy="-1.57 -1.57 0" /> MESH ORIGIN -->
+        <origin xyz="-0.031 0 -0.055" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://bbot_description/meshes/collision/left_top_leg.stl"  scale="1 1 1"/>
+          <!-- <mesh filename="package://bbot_description/meshes/collision/left_top_leg.stl"  scale="1 1 1"/> -->
+          <box size="0.065065 0.048933 0.138999" />
         </geometry>
       </collision>
     </link>
@@ -83,9 +90,11 @@
         </geometry>
       </visual>
       <collision>
-        <origin xyz="-0.025 -0.021 -0.0695" rpy="-1.57 -1.57 0" />
+        <!-- <origin xyz="-0.025 -0.021 -0.0695" rpy="-1.57 -1.57 0" />  MESH ORIGIN-->
+        <origin xyz="0.02825 0 -0.065" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://bbot_description/meshes/collision/right_bottom_leg.stl"  scale="1 1 1"/>
+          <!-- <mesh filename="package://bbot_description/meshes/collision/right_bottom_leg.stl"  scale="1 1 1"/> -->
+          <box size="0.040031 0.054258 0.071798" />
         </geometry>
       </collision>
     </link>
@@ -103,16 +112,18 @@
         </geometry>
       </visual>
       <collision>
-        <origin xyz="-0.031 -0.021 -0.0795" rpy="-1.57 -1.57 0" />
+        <!-- <origin xyz="-0.031 -0.021 -0.0795" rpy="-1.57 -1.57 0" /> MESH ORIGIN -->
+        <origin xyz="-0.02825 0 -0.065" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://bbot_description/meshes/collision/left_bottom_leg.stl"  scale="1 1 1"/>
+          <!-- <mesh filename="package://bbot_description/meshes/collision/left_bottom_leg.stl"  scale="1 1 1"/> -->
+          <box size="0.040031 0.054258 0.071798" />
         </geometry>
       </collision>
     </link>
 
     <link name="right_wheel">
       <inertial>
-        <origin xyz="0 0 0" />
+       <origin xyz="0 0 0" />
         <mass value="0.303077"/>
         <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
       </inertial>
@@ -123,9 +134,11 @@
         </geometry>
       </visual>
       <collision>
-        <origin xyz="-0.019 0.009 0.021" rpy="0 0 1.57" />
+        <!-- <origin xyz="-0.019 0.009 0.021" rpy="0 0 1.57" /> MESH ORIGIN -->
+        <origin xyz="-0.002 -0.0003 0" rpy="1.57 0 1.57" />
         <geometry>
-          <mesh filename="package://bbot_description/meshes/collision/right_wheel.stl"  scale="1 1 1"/>
+          <!-- <mesh filename="package://bbot_description/meshes/collision/right_wheel.stl"  scale="1 1 1"/> -->
+          <cylinder radius="0.05" length="0.03"/>
         </geometry>
       </collision>
     </link>
@@ -143,9 +156,11 @@
         </geometry>
       </visual>
       <collision>
-        <origin xyz="-0.037 0.0 -0.021" rpy="0 0 -1.57" />
+        <!-- <origin xyz="-0.037 0.0 -0.021" rpy="0 0 -1.57" /> MESH ORIGIN -->
+        <origin xyz="0.0015 -0.0003 0" rpy="1.57 0 1.57" />
         <geometry>
-          <mesh filename="package://bbot_description/meshes/collision/left_wheel.stl"  scale="1 1 1"/>
+          <!-- <mesh filename="package://bbot_description/meshes/collision/left_wheel.stl"  scale="1 1 1"/> -->
+          <cylinder radius="0.05" length="0.03"/>
         </geometry>
       </collision>
     </link>
@@ -163,9 +178,11 @@
         </geometry>
       </visual>
       <collision>
-        <origin xyz="-0.0 -0.0 0.0" rpy="-1.57 -1.57 0" />
+        <!-- <origin xyz="0.022746 0.022746 0.137604" rpy="-1.57 -1.57 0" /> MESH ORIGIN -->
+        <origin xyz=" -0.02 0.0 0.025" rpy="1.57 0 0" />
         <geometry>
-          <mesh filename="package://bbot_description/meshes/collision/LDS.stl"  scale="1 1 1"/>
+          <!-- <mesh filename="package://bbot_description/meshes/collision/LDS.stl"  scale="1 1 1"/> -->
+          <box size="0.069747 0.103263 0.038782" />
         </geometry>
       </collision>
     </link>
@@ -185,7 +202,8 @@
       <collision>
         <origin xyz="-0.0 -0.0 0.0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://bbot_description/meshes/collision/RspCameraV2.stl"  scale="1 1 1"/>
+          <!-- <mesh filename="package://bbot_description/meshes/collision/RspCameraV2.stl"  scale="1 1 1"/> -->
+          <box size="0.001 0.001 0.001"/>
         </geometry>
       </collision>
     </link>
