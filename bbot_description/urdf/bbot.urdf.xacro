@@ -1,6 +1,9 @@
 <?xml version="1.0" ?>
 <robot name="Bbot" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
+<!-- INFO -->
+<!-- Center of Mass height: 0.235 m -->
+
 <!-- Dummy Root Link -->
   <link name="base_link"/>
     
@@ -15,7 +18,7 @@
       <inertial>
         <origin xyz="0.02228462 0.01906787 0.05671578" rpy="0.0 0 0" />
         <mass value="1.171185"/>
-        <inertia ixx="0.00249108" ixy="0.0" ixz="0.0" iyy="0.0038043" iyz="0.0" izz="0.00360989" />
+        <inertia ixx="0.00311204" ixy="0.0" ixz="0.0" iyy="0.00402789" iyz="0.0" izz="0.00411583" />
       </inertial>
       <visual>
         <origin xyz="0.0 0.0 0.0" rpy="1.57 0 0" />
@@ -35,8 +38,8 @@
     <link name="right_top_leg">
       <inertial>
         <origin xyz="0.032 0 -0.072" />
-        <mass value="0.237123"/>
-        <inertia ixx="0.00025778" ixy="0.0" ixz="0.0" iyy="0.00029723" iyz="0.0" izz="0.00010339" />
+        <mass value="0.207"/>
+        <inertia ixx="0.00022502" ixy="0.0" ixz="0.0" iyy="0.00025945" iyz="0.0" izz="0.00009025" />
       </inertial>
       <visual>
         <origin xyz="-0.025 -0.021 -0.18" rpy="-1.57 -1.57 0" />
@@ -57,8 +60,8 @@
     <link name="left_top_leg">
       <inertial>
         <origin xyz="-0.032 0 -0.072" />
-        <mass value="0.237123"/>
-        <inertia ixx="0.00025778" ixy="0.0" ixz="0.0" iyy="0.00029723" iyz="0.0" izz="0.00010339" />
+        <mass value="0.207"/>
+        <inertia ixx="0.00022502" ixy="0.0" ixz="0.0" iyy="0.00025945" iyz="0.0" izz="0.00009025" />
       </inertial>
       <visual>
         <origin xyz="-0.031 -0.021 -0.19" rpy="-1.57 -1.57 0" />
@@ -79,8 +82,8 @@
     <link name="right_bottom_leg">
       <inertial>
         <origin xyz="0.032 0 -0.06525" />
-        <mass value="0.367745"/>
-        <inertia ixx="0.00034532" ixy="0.0" ixz="-0.00001256" iyy="0.00035624" iyz="0.0" izz="0.00016337" />
+        <mass value="0.334"/>
+        <inertia ixx="0.0003166" ixy="0.0" ixz="0.0" iyy="0.00032649" iyz="0.0" izz="0.00014826" />
       </inertial>
       <visual>
         <origin xyz="-0.025 -0.021 -0.0695" rpy="-1.57 -1.57 0" />
@@ -101,8 +104,8 @@
     <link name="left_bottom_leg">
       <inertial>
         <origin xyz="-0.032 0 -0.06525" />
-        <mass value="0.367745"/>
-        <inertia ixx="0.00034531" ixy="0.0" ixz="-0.00001256" iyy="0.00035624" iyz="0.0" izz="0.00016337" />
+        <mass value="0.334"/>
+        <inertia ixx="0.0003166" ixy="0.0" ixz="0.0" iyy="0.00032649" iyz="0.0" izz="0.00014826" />
       </inertial>
       <visual>
         <origin xyz="-0.031 -0.021 -0.0795" rpy="-1.57 -1.57 0" />
@@ -124,7 +127,7 @@
       <inertial>
         <origin xyz="0 0 0" />
         <mass value="0.303077"/>
-        <inertia ixx="0.00038173" ixy="0.0" ixz="0.0" iyy="0.00021305" iyz="0.0" izz="0.00021285" />
+        <inertia ixx="0.0002521" ixy="0.0" ixz="0.0" iyy="0.00014179" iyz="0.0" izz="0.00014098" />
       </inertial>
       <visual>
         <origin xyz="-0.019 0.009 0.021" rpy="0 0 1.57" />
@@ -146,7 +149,7 @@
       <inertial>
         <origin xyz="0 0 0"/>
         <mass value="0.303077"/>
-        <inertia ixx="0.00038173" ixy="0.0" ixz="0.0" iyy="0.00021305" iyz="0.0" izz="0.00021285" />
+        <inertia ixx="0.0002521" ixy="0.0" ixz="0.0" iyy="0.00014179" iyz="0.0" izz="0.00014098" />
       </inertial>
       <visual>
         <origin xyz="-0.037 0.0 -0.021" rpy="0 0 -1.57" />
