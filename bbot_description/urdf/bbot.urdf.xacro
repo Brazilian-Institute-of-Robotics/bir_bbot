@@ -3,6 +3,10 @@
 
 <!-- INFO -->
 <!-- Center of Mass height: 0.235 m -->
+<!-- Top leg lengh: 0.1106 m -->
+<!-- Bottom leg lengh: 0.0795 m -->
+<!-- Max alpha: 46º -->
+<!-- Max Betha: 140º -->
 
 <!-- Dummy Root Link -->
   <link name="base_link"/>
@@ -30,7 +34,7 @@
         <origin xyz="0.023030 0.017698 0.066007" rpy="0.0 0 0" />
         <geometry>
           <!-- <mesh filename="package://bbot_description/meshes/collision/base.stl"  scale="1 1 1"/> -->
-          <box size="0.174214 0.139588 0.096376" />
+          <box size="0.174214 0.159979 0.096376" />
         </geometry>
       </collision>
     </link>
@@ -130,7 +134,7 @@
         <inertia ixx="0.0002521" ixy="0.0" ixz="0.0" iyy="0.00014179" iyz="0.0" izz="0.00014098" />
       </inertial>
       <visual>
-        <origin xyz="-0.019 0.009 0.021" rpy="0 0 1.57" />
+        <origin xyz="-0.019 0.0095 0.021" rpy="0 0 1.57" />
         <geometry>
           <mesh filename="package://bbot_description/meshes/visual/right_wheel.dae"  scale="1 1 1"/>
         </geometry>
@@ -159,7 +163,7 @@
       </visual>
       <collision>
         <!-- <origin xyz="-0.037 0.0 -0.021" rpy="0 0 -1.57" /> MESH ORIGIN -->
-        <origin xyz="0.0015 -0.0003 0" rpy="1.57 0 1.57" />
+        <origin xyz="0.002 -0.0003 0" rpy="1.57 0 1.57" />
         <geometry>
           <!-- <mesh filename="package://bbot_description/meshes/collision/left_wheel.stl"  scale="1 1 1"/> -->
           <cylinder radius="0.05" length="0.03"/>
@@ -214,7 +218,7 @@
     <joint name="base2right_top_leg" type="revolute">
       <parent link="main_base"/>
       <child link="right_top_leg"/>
-      <origin xyz="-0.055 0.021 0.0" rpy="0 0 0" />
+      <origin xyz="-0.055 0.021 0.0" rpy="0.656 0 0" /> <!-- Previous 0.656 0.3927 -->
       <axis xyz="1 0 0" />
       <limit velocity="6.5" effort="1000" lower="-3.14" upper="3.14" />
       <dynamics damping="0.1" friction="0.0" />
@@ -223,7 +227,7 @@
     <joint name="base2left_top_leg" type="revolute">
       <parent link="main_base"/>
       <child link="left_top_leg"/>
-      <origin xyz="0.101 0.021 0.0" rpy="0 0 0" />
+      <origin xyz="0.101 0.021 0.0" rpy="0.656 0 0" />
       <axis xyz="1 0 0" />
       <limit velocity="6.5" effort="1000" lower="-3.14" upper="3.14" />
       <dynamics damping="0.1" friction="0.0" />
@@ -232,7 +236,7 @@
     <joint name="right_top_leg2bottom_leg" type="revolute">
       <parent link="right_top_leg"/>
       <child link="right_bottom_leg"/>
-      <origin xyz="-0.0 0.0 -0.1105" rpy="0 0 0" />
+      <origin xyz="-0.0 0.0 -0.1105" rpy="-1.67 0 0" /> <!-- Previous -1.67 -0.9547-->
       <axis xyz="1 0 0" />
       <limit velocity="6.5" effort="1000" lower="-3.14" upper="3.14" />
       <dynamics damping="0.1" friction="0.0" />
@@ -241,28 +245,28 @@
     <joint name="left_top_leg2bottom_leg" type="revolute">
       <parent link="left_top_leg"/>
       <child link="left_bottom_leg"/>
-      <origin xyz="-0.0 0.0 -0.1105" rpy="0 0 0" />
+      <origin xyz="-0.0 0.0 -0.1105" rpy="-1.67 0 0" />
       <axis xyz="1 0 0" />
       <limit velocity="6.5" effort="1000" lower="-3.14" upper="3.14" />
       <dynamics damping="0.1" friction="0.0" />
     </joint>
 
-    <joint name="right_bottom_leg2wheel" type="revolute">
+    <joint name="right_bottom_leg2wheel" type="continuous">
       <parent link="right_bottom_leg"/>
       <child link="right_wheel"/>
       <origin xyz="-0.0062 0.0 -0.0795" rpy="0 0 0" />
       <axis xyz="1 0 0" />
-      <limit velocity="500" effort="1000" lower="-2.0944" upper="2.0944" />
-      <dynamics damping="0.1" friction="0.0" />
+      <limit velocity="500" effort="1000"/> <!--lower="-2.0944" upper="2.0944"-->
+      <dynamics damping="0.01" friction="0.0" />
     </joint>
 
-    <joint name="left_bottom_leg2wheel" type="revolute">
+    <joint name="left_bottom_leg2wheel" type="continuous">
       <parent link="left_bottom_leg"/>
       <child link="left_wheel"/>
       <origin xyz="0.0062 0.0 -0.0795" rpy="0 0 0" />
       <axis xyz="1 0 0" />
-      <limit velocity="500" effort="1000" lower="-2.0944" upper="2.0944" />
-      <dynamics damping="0.1" friction="0.0" />
+      <limit velocity="500" effort="1000"/> <!--lower="-2.0944" upper="2.0944"-->
+      <dynamics damping="0.01" friction="0.0" />
     </joint>
 
     <joint name="base2lds" type="fixed">
@@ -352,40 +356,40 @@
 
 <!-- PARAMETERS -->
   <gazebo reference="main_base">
-      <mu1>0.2</mu1>
-      <mu2>0.2</mu2>
+      <mu1>0.5</mu1>
+      <mu2>0.5</mu2>
   </gazebo>
   <gazebo reference="right_top_leg">
-      <mu1>0.2</mu1>
-      <mu2>0.2</mu2>
+      <mu1>0.5</mu1>
+      <mu2>0.5</mu2>
   </gazebo>
   <gazebo reference="left_top_leg">
-      <mu1>0.2</mu1>
-      <mu2>0.2</mu2>
+      <mu1>0.5</mu1>
+      <mu2>0.5</mu2>
   </gazebo>
   <gazebo reference="right_bottom_leg">
-      <mu1>0.2</mu1>
-      <mu2>0.2</mu2>
+      <mu1>0.5</mu1>
+      <mu2>0.5</mu2>
   </gazebo>
   <gazebo reference="left_bottom_leg">
-      <mu1>0.2</mu1>
-      <mu2>0.2</mu2>
+      <mu1>0.5</mu1>
+      <mu2>0.5</mu2>
   </gazebo>
   <gazebo reference="right_wheel">
-      <mu1>0.2</mu1>
-      <mu2>0.2</mu2>
+      <mu1>0.8</mu1> 
+      <mu2>0.8</mu2> 
   </gazebo>
   <gazebo reference="left_wheel">
-      <mu1>0.2</mu1>
-      <mu2>0.2</mu2>
+      <mu1>0.8</mu1>
+      <mu2>0.8</mu2>
   </gazebo>
   <gazebo reference="lds">
-      <mu1>0.2</mu1>
-      <mu2>0.2</mu2>
+      <mu1>0.5</mu1>
+      <mu2>0.5</mu2>
   </gazebo>
   <gazebo reference="RspCameraV2">
-      <mu1>0.2</mu1>
-      <mu2>0.2</mu2>
+      <mu1>0.5</mu1>
+      <mu2>0.5</mu2>
   </gazebo>
 
 
@@ -487,6 +491,7 @@
         <parent link="main_base" />
         <child link="imu_frame_gazebo" />
         <origin xyz="0.02075 0.01765 0.0326" rpy="0 0 0" />
+        <!-- <origin xyz="-0.01765 0.02075 0.0326" rpy="0 0 0" /> -->
     </joint>
     <gazebo reference="imu_frame_gazebo">
       <gravity>true</gravity>
