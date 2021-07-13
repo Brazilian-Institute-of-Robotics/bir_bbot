@@ -10,11 +10,7 @@
         <remap from="p_setpoint" to="/position_pid/setpoint" />
         <remap from="p_state" to="/position_pid/state" />
         <remap from="teleop" to="/bbot/teleop"/>
-        <param name="position_setpoint" value="0.001" />
     </node>
-
-    <!-- Balancing PID Tunings for the record-->
-    <!-- Acc. 4.0, Kp: -10.0, Ki:-50, Kd:-0.8 (Most stable) -->
 
     <!-- launch balancing PID node -->
     <node name="balancing_pid" pkg="pid" type="controller" output="screen" >
@@ -37,11 +33,11 @@
 
     <!-- launch Position control PID node -->
     <node name="position_pid" pkg="pid" type="controller" output="screen" >
-      <param name="Kp" value="0.005"/> 
-      <param name="Ki" value="1.0" />
+      <param name="Kp" value="0.007"/> 
+      <param name="Ki" value="7.8" />
       <param name="Kd" value="0.001"/>
       <param name="upper_limit" value="0.095" />
-      <param name="lower_limit" value="0.075" />
+      <param name="lower_limit" value="0.065" />
       <param name="windup_limit" value="0.1" />
       <param name="cutoff_frequency" value="20" />
       <param name="max_loop_frequency" value="105.0" />
@@ -68,8 +64,6 @@
     <!-- launch position PID plot  -->
     <node name="pos_plot" pkg="rqt_plot" type="rqt_plot"
     args="/position_pid/control_effort/data /position_pid/state/data /position_pid/setpoint/data" />
-
-
 
     <!-- <node name="rqt_reconfigure" pkg="rqt_reconfigure" type="rqt_reconfigure" /> -->
     <!-- <node name="rqt_robot_monitor" pkg="rqt_robot_monitor" type="rqt_robot_monitor" /> -->

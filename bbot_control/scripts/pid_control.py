@@ -24,13 +24,14 @@ class Self_Balance:
         # Position_PID: Input: desired value for the velocity commands average; Control effort: the Balancing_PID setpoint; Feedback: current velocity commands average
         self.p_state_pub = rospy.Publisher("p_state",Float64,queue_size=10)
         self.p_setpoint_pub = rospy.Publisher("p_setpoint", Float64, queue_size=1)
-        self.p_setpoint = rospy.get_param("~position_setpoint")
+        self.p_setpoint = 0.0001
         self.ctrl_eff_memory_size = 100
         self.ctrl_eff_memory = deque([0 for i in range(self.ctrl_eff_memory_size)], maxlen=self.ctrl_eff_memory_size)
         self.ctrl_eff_average = 0.0
         
-        # Teleop
+        # Teleop: get Twist msgs and control the angle the robot should balance around in order to move forwards or backwards
         rospy.Subscriber("teleop", Twist, self.__teleop_callback)
+        self.max_linear_vel = 1.0
         self.linear_vel = 0.0
         self.angular_vel = 0.0
         
@@ -43,7 +44,7 @@ class Self_Balance:
         self.current_angle = euler_from_quaternion(quaternion)[0] #extract pitch angle
         self.b_state_pub.publish(Float64(data=self.current_angle)) #publish balancing_PID current state
         
-        self.p_setpoint = rospy.get_param("~position_setpoint") # get position_PID setpoint from Parameter server
+        # self.p_setpoint = rospy.get_param("~position_setpoint") # get position_PID setpoint from Parameter server
         self.p_setpoint_pub.publish(Float64(data=self.p_setpoint)) #Publish position_PID setpoint
         self.p_state_pub.publish(Float64(data=self.ctrl_eff_average)) #publish position_PID current state
         
@@ -67,11 +68,16 @@ class Self_Balance:
         
         self.ctrl_eff_memory.append(data.data) # Update the balancing_PID control effort readings
         self.ctrl_eff_average = sum(self.ctrl_eff_memory)/self.ctrl_eff_memory_size # Update balancing_PID control effort avarage
+
     
     #Store velocity commands sent by other sources (joystick, move_base, ...)
     def __teleop_callback(self,data):
-        self.angular_vel = data.angular.z
-        self.linear_vel = data.linear.x
+        self.angular_vel = data.angular.z*0.5 #This constant is arbitrary
+        self.linear_vel = data.linear.x*0.8
+        if self.linear_vel > self.max_linear_vel: self.p_setpoint = self.max_linear_vel
+        elif self.linear_vel < -self.max_linear_vel: self.p_setpoint = -self.max_linear_vel
+        else: self.p_setpoint = self.linear_vel
+        
 
 
 if __name__ == '__main__':
