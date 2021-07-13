@@ -1,0 +1,17 @@
+# Config file for the Twist_mux node. Include inputs for keyboard, joystick and autonomous navigation
+topics:
+-
+  name    : navigation
+  topic   : /bbot/nav_vel
+  timeout : 0.5
+  priority: 50
+-
+  name    : joystick
+  topic   : /bbot/joy_vel
+  timeout : 0.5
+  priority: 100
+-
+  name    : keyboard
+  topic   : /bbot/key_vel
+  timeout : 0.5
+  priority: 150

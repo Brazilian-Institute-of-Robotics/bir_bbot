@@ -54,16 +54,24 @@
     <node name="freq_pub" pkg="bbot_control" type="freq_pub.py" output="screen">
         <remap from="pub_topic" to="/balancing_pid/setpoint"/>
         <remap from="sub_topic" to="/position_pid/buffer"/>
-        <!-- <param name="K" value="0.08"/> -->
+    </node>
+
+    <!-- launch twist_mux node -->
+    <arg name="cmd_vel_out" value="/bbot/teleop"/>
+    <arg name="config_topics" value="$(find bbot_control)/config/twist_mux.yaml"/>
+    <node pkg="twist_mux" type="twist_mux" name="twist_mux" output="screen">
+      <remap from="cmd_vel_out" to="$(arg cmd_vel_out)"/>
+      <rosparam file="$(arg config_topics)" command="load"/>
+      <rosparam param="locks">[]</rosparam>
     </node>
 
     <!-- launch balancing PID plot  -->
-    <node name="bal_plot" pkg="rqt_plot" type="rqt_plot"
-    args="/balancing_pid/control_effort/data /balancing_pid/state/data /balancing_pid/setpoint/data" />
+    <!-- <node name="bal_plot" pkg="rqt_plot" type="rqt_plot"
+    args="/balancing_pid/control_effort/data /balancing_pid/state/data /balancing_pid/setpoint/data" /> -->
 
     <!-- launch position PID plot  -->
-    <node name="pos_plot" pkg="rqt_plot" type="rqt_plot"
-    args="/position_pid/control_effort/data /position_pid/state/data /position_pid/setpoint/data" />
+    <!-- <node name="pos_plot" pkg="rqt_plot" type="rqt_plot"
+    args="/position_pid/control_effort/data /position_pid/state/data /position_pid/setpoint/data" /> -->
 
     <!-- <node name="rqt_reconfigure" pkg="rqt_reconfigure" type="rqt_reconfigure" /> -->
     <!-- <node name="rqt_robot_monitor" pkg="rqt_robot_monitor" type="rqt_robot_monitor" /> -->
