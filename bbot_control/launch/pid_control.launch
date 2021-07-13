@@ -7,8 +7,8 @@
         <remap from="b_setpoint" to="/balancing_pid/setpoint" />
         <remap from="b_state" to="/balancing_pid/state" />
         <remap from="b_control_effort" to="/balancing_pid/control_effort" />
-        <remap from="p_setpoint" to="/position_pid/setpoint" />
-        <remap from="p_state" to="/position_pid/state" />
+        <remap from="v_setpoint" to="/velocity_pid/setpoint" />
+        <remap from="v_state" to="/velocity_pid/state" />
         <remap from="teleop" to="/bbot/teleop"/>
     </node>
 
@@ -31,8 +31,8 @@
       <remap from="pid_enable" to="~pid_enable" />
     </node>
 
-    <!-- launch Position control PID node -->
-    <node name="position_pid" pkg="pid" type="controller" output="screen" >
+    <!-- launch velocity control PID node -->
+    <node name="velocity_pid" pkg="pid" type="controller" output="screen" >
       <param name="Kp" value="0.007"/> 
       <param name="Ki" value="7.8" />
       <param name="Kd" value="0.001"/>
@@ -43,17 +43,17 @@
       <param name="max_loop_frequency" value="105.0" />
       <param name="min_loop_frequency" value="95.0" />
       <param name="setpoint_timeout" value="-1.0" />
-      <remap from="setpoint" to="/position_pid/setpoint" />
-      <remap from="state" to="/position_pid/state" />
-      <remap from="control_effort" to="/position_pid/buffer" />
+      <remap from="setpoint" to="/velocity_pid/setpoint" />
+      <remap from="state" to="/velocity_pid/state" />
+      <remap from="control_effort" to="/velocity_pid/buffer" />
       <remap from="pid_debug" to="~pid_debug" />
       <remap from="pid_enable" to="~pid_enable" />
     </node>
 
-    <!-- launch node to publish setpoint msgs for the position PID in a constant frequency -->
+    <!-- launch node to publish setpoint msgs for the velocity PID in a constant frequency -->
     <node name="freq_pub" pkg="bbot_control" type="freq_pub.py" output="screen">
         <remap from="pub_topic" to="/balancing_pid/setpoint"/>
-        <remap from="sub_topic" to="/position_pid/buffer"/>
+        <remap from="sub_topic" to="/velocity_pid/buffer"/>
     </node>
 
     <!-- launch twist_mux node -->
@@ -69,9 +69,9 @@
     <!-- <node name="bal_plot" pkg="rqt_plot" type="rqt_plot"
     args="/balancing_pid/control_effort/data /balancing_pid/state/data /balancing_pid/setpoint/data" /> -->
 
-    <!-- launch position PID plot  -->
+    <!-- launch velocity PID plot  -->
     <!-- <node name="pos_plot" pkg="rqt_plot" type="rqt_plot"
-    args="/position_pid/control_effort/data /position_pid/state/data /position_pid/setpoint/data" /> -->
+    args="/velocity_pid/control_effort/data /velocity_pid/state/data /velocity_pid/setpoint/data" /> -->
 
     <!-- <node name="rqt_reconfigure" pkg="rqt_reconfigure" type="rqt_reconfigure" /> -->
     <!-- <node name="rqt_robot_monitor" pkg="rqt_robot_monitor" type="rqt_robot_monitor" /> -->

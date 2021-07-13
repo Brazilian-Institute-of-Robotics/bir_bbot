@@ -21,10 +21,10 @@ class Self_Balance:
         rospy.Subscriber("b_control_effort", Float64, self.__balancing_control_effort_callback)
         self.current_angle = 0
         
-        # Position_PID: Input: desired value for the velocity commands average; Control effort: the Balancing_PID setpoint; Feedback: current velocity commands average
-        self.p_state_pub = rospy.Publisher("p_state",Float64,queue_size=10)
-        self.p_setpoint_pub = rospy.Publisher("p_setpoint", Float64, queue_size=1)
-        self.p_setpoint = 0.0001
+        # Velocity_PID: Input: desired average of velocity commands; Control effort: the Balancing_PID setpoint; Feedback: current average velocity commands
+        self.v_state_pub = rospy.Publisher("v_state",Float64,queue_size=10)
+        self.v_setpoint_pub = rospy.Publisher("v_setpoint", Float64, queue_size=1)
+        self.v_setpoint = 0.0001
         self.ctrl_eff_memory_size = 100
         self.ctrl_eff_memory = deque([0 for i in range(self.ctrl_eff_memory_size)], maxlen=self.ctrl_eff_memory_size)
         self.ctrl_eff_average = 0.0
@@ -38,15 +38,14 @@ class Self_Balance:
         #Aux variables
         self.enable_balancing_PID = False #Allow publishing the setpoint for the balancing_PID once
 
-    # Get IMU msgs; Publish the balancing_PID and the position_PID current state; 
+    # Get IMU msgs; Publish the balancing_PID and the velocity_PID current state; 
     def __balancing_state_callback(self,data):
         quaternion = [data.orientation.x,data.orientation.y,data.orientation.z,data.orientation.w] #get orientation quaternion
         self.current_angle = euler_from_quaternion(quaternion)[0] #extract pitch angle
         self.b_state_pub.publish(Float64(data=self.current_angle)) #publish balancing_PID current state
         
-        # self.p_setpoint = rospy.get_param("~position_setpoint") # get position_PID setpoint from Parameter server
-        self.p_setpoint_pub.publish(Float64(data=self.p_setpoint)) #Publish position_PID setpoint
-        self.p_state_pub.publish(Float64(data=self.ctrl_eff_average)) #publish position_PID current state
+        self.v_setpoint_pub.publish(Float64(data=self.v_setpoint)) #Publish velocity_PID setpoint
+        self.v_state_pub.publish(Float64(data=self.ctrl_eff_average)) #publish velocity_PID current state
         
         if not self.enable_balancing_PID: #Publishes the balancing_PID setpoint only once
             self.b_setpoint_pub.publish(Float64(data=0.078)) #Publish balancing_PID setpoint
@@ -74,9 +73,9 @@ class Self_Balance:
     def __teleop_callback(self,data):
         self.angular_vel = data.angular.z*0.5 #This constant is arbitrary
         self.linear_vel = data.linear.x*0.8
-        if self.linear_vel > self.max_linear_vel: self.p_setpoint = self.max_linear_vel
-        elif self.linear_vel < -self.max_linear_vel: self.p_setpoint = -self.max_linear_vel
-        else: self.p_setpoint = self.linear_vel
+        if self.linear_vel > self.max_linear_vel: self.v_setpoint = self.max_linear_vel
+        elif self.linear_vel < -self.max_linear_vel: self.v_setpoint = -self.max_linear_vel
+        else: self.v_setpoint = self.linear_vel
         
 
 
