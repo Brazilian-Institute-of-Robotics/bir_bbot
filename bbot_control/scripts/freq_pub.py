@@ -20,7 +20,7 @@ if __name__ == '__main__':
     rospy.init_node('freq_pub', anonymous=True)
     fp = Freq_Pub()
     
-    rate = rospy.Rate(10)
+    rate = rospy.Rate(20)
     while not rospy.is_shutdown():
         fp.publish_msg()
         rate.sleep()

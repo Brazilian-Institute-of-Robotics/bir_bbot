@@ -15,10 +15,10 @@
     <!-- launch balancing PID node -->
     <node name="balancing_pid" pkg="pid" type="controller" output="screen" >
       <param name="Kp" value="-10.0" /> 
-      <param name="Ki" value="-50.0" />
+      <param name="Ki" value="-200.0" />
       <param name="Kd" value="-0.8"/>
-      <param name="upper_limit" value="2.0" />
-      <param name="lower_limit" value="-2.0" />
+      <param name="upper_limit" value="0.45" />
+      <param name="lower_limit" value="-0.45" />
       <param name="windup_limit" value="0.1" />
       <param name="cutoff_frequency" value="20" />
       <param name="max_loop_frequency" value="105.0" />
@@ -33,11 +33,11 @@
 
     <!-- launch velocity control PID node -->
     <node name="velocity_pid" pkg="pid" type="controller" output="screen" >
-      <param name="Kp" value="0.007"/> 
-      <param name="Ki" value="7.8" />
-      <param name="Kd" value="0.001"/>
-      <param name="upper_limit" value="0.095" />
-      <param name="lower_limit" value="0.065" />
+      <param name="Kp" value="0.05"/> 
+      <param name="Ki" value="5.0" />
+      <param name="Kd" value="0.005"/>
+      <param name="upper_limit" value="0.09" />
+      <param name="lower_limit" value="0.068" />
       <param name="windup_limit" value="0.1" />
       <param name="cutoff_frequency" value="20" />
       <param name="max_loop_frequency" value="105.0" />
@@ -71,7 +71,7 @@
 
     <!-- launch velocity PID plot  -->
     <!-- <node name="pos_plot" pkg="rqt_plot" type="rqt_plot"
-    args="/velocity_pid/control_effort/data /velocity_pid/state/data /velocity_pid/setpoint/data" /> -->
+    args="/balancing_pid/setpoint/data /velocity_pid/state/data /velocity_pid/setpoint/data" /> -->
 
     <!-- <node name="rqt_reconfigure" pkg="rqt_reconfigure" type="rqt_reconfigure" /> -->
     <!-- <node name="rqt_robot_monitor" pkg="rqt_robot_monitor" type="rqt_robot_monitor" /> -->

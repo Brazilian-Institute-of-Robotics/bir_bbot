@@ -31,7 +31,8 @@ class Self_Balance:
         
         # Teleop: get Twist msgs and control the angle the robot should balance around in order to move forwards or backwards
         rospy.Subscriber("teleop", Twist, self.__teleop_callback)
-        self.max_linear_vel = 1.0
+        self.max_linear_vel = 0.1
+        self.max_angular_vel = 0.3
         self.linear_vel = 0.0
         self.angular_vel = 0.0
         
@@ -71,8 +72,12 @@ class Self_Balance:
     
     #Store velocity commands sent by other sources (joystick, move_base, ...)
     def __teleop_callback(self,data):
-        self.angular_vel = data.angular.z*0.5 #This constant is arbitrary
-        self.linear_vel = data.linear.x*0.8
+        self.angular_vel = data.angular.z
+        self.linear_vel = data.linear.x
+        #Apply limits for angular velocity
+        if self.angular_vel > self.max_angular_vel: self.angular_vel = self.max_angular_vel
+        elif self.angular_vel < -self.max_angular_vel: self.angular_vel = -self.max_angular_vel
+        #Apply limits for angular velocity
         if self.linear_vel > self.max_linear_vel: self.v_setpoint = self.max_linear_vel
         elif self.linear_vel < -self.max_linear_vel: self.v_setpoint = -self.max_linear_vel
         else: self.v_setpoint = self.linear_vel
