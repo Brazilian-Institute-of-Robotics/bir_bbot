@@ -8,6 +8,8 @@ project(bbot_bringup)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  hardware_interface
+  controller_manager
   dynamixel_sdk
   roscpp
   rospy
@@ -105,7 +107,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES bbot_bringup
-#  CATKIN_DEPENDS dynamixel_sdk roscpp rospy
+  CATKIN_DEPENDS dynamixel_sdk roscpp rospy hardware_interface controller_manager
 #  DEPENDS system_lib
 )
 

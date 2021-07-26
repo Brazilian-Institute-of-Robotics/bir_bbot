@@ -1,12 +1,9 @@
+#include <ros/ros.h>
 #include <hardware_interface/joint_command_interface.h>
 #include <hardware_interface/joint_state_interface.h>
-#include "dynamixel_sdk/dynamixel_sdk.h"
 #include <hardware_interface/robot_hw.h>
 #include "controller_manager/controller_manager.h"
-
-//TODO review code bugs
-
-using namespace dynamixel; //TODO Why??
+#include "dynamixel_sdk/dynamixel_sdk.h"
 
 // Control table addresses for Wheels (XM430-W210)
 #define WHEEL_ADDR_TORQUE_ENABLE    64
@@ -35,21 +32,21 @@ dynamixel::PacketHandler * packetHandler;	//Access dynamixels EEPROM and RAM for
 class BbotHardware : public hardware_interface::RobotHW{
 private: //Variables
 	//Dynamixels Setup vars
-	uint8_t joint_IDs[2] = {11, 12};
+	uint8_t joint_IDs[2] = {12, 22};
 	uint8_t dxl_error = 0;
 	int dxl_comm_result = COMM_TX_FAIL;
 	
 	//BbotHardware vars
 	enum Joints{RIGHT_WHEEL, LEFT_WHEEL};
 	hardware_interface::JointStateInterface joint_state_interface_;
-	hardware_interface::PositionJointInterface velocity_joint_interface_;
+	hardware_interface::VelocityJointInterface velocity_joint_interface_;
 	double cmd[2];
 	double pos[2];
 	double vel[2];
 	double eff[2];
 
 public: //Methods
-	BbotHardware() { 
+	BbotHardware(const ros::NodeHandle &nh) { 
 		std::string joint_names[2] = {"right_bottom_leg2wheel","left_bottom_leg2wheel"};
 //		uint8_t joint_IDs[2] = {11, 12};
 		for(size_t i=0; i< 2; i++){ //Define the hardware interfaces for each joint of the robot
@@ -67,8 +64,8 @@ public: //Methods
 		registerInterface(&joint_state_interface_);
 		registerInterface(&velocity_joint_interface_);
 
-		portHandler = PortHandler::getPortHandler(DEVICE_NAME);
-		packetHandler = PacketHandler::getPacketHandler(PROTOCOL_VERSION);
+		portHandler = dynamixel::PortHandler::getPortHandler(DEVICE_NAME);
+		packetHandler = dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
 
 		if (!portHandler->openPort()) {ROS_ERROR("Failed to open the port!");}
 		if (!portHandler->setBaudRate(BAUDRATE)) {ROS_ERROR("Failed to set the baudrate!");}
@@ -86,7 +83,7 @@ public: //Methods
 
 	}
 
-	void write(){
+	void write(const ros::Time &time){
 		static double dxl_vel;
 		// Write wheels angular velocity
 		for(size_t i=0; i< 2; i++){
@@ -99,7 +96,7 @@ public: //Methods
 		ROS_INFO("SETTING:\n\tRIGHT_WHEEL: %f\n\tLEFT_WHEEL: %f", cmd[RIGHT_WHEEL],cmd[LEFT_WHEEL]);
 	}
 
-	void read(){
+	void read(const ros::Time &time){
 		static uint32_t dxl_pos, dxl_vel;
 		for(size_t i=0; i< 2; i++){
 			dxl_comm_result = packetHandler->read4ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_PRESENT_VELOCITY, (uint32_t *)&dxl_vel, &dxl_error);
@@ -127,17 +124,21 @@ int main(int argc, char **argv) {
 	spinner.start();
 
 	ros::NodeHandle nh;
-	BbotHardware bbot_hardware();
+	BbotHardware bbot_hardware(nh);
 	controller_manager::ControllerManager cm(&bbot_hardware, nh);
 
-	ros::Rate loop_rate(100); // Control loop frequency = 100 Hz
+	ros::Duration period(0.01); // 100Hz
+	ros::Time last_time = ros::Time::now();
+
 	while (ros::ok()) {
+		ros::Time time = ros::Time::now();
 
-	bbot_hardware.read();
-	cm.update(bbot_hardware.get_time(), bbot_hardware.get_period());
-	bbot_hardware.write(time);
+		bbot_hardware.read(time);
+		cm.update(ros::Time::now(), time - last_time);
+		bbot_hardware.write(time);
 
-	loop_rate.sleep();
+		period.sleep();
+		last_time = time;
 	}
 
 	return 0;
