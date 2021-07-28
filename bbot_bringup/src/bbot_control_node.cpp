@@ -87,13 +87,13 @@ public: //Methods
 		static double dxl_vel;
 		// Write wheels angular velocity
 		for(size_t i=0; i< 2; i++){
-			dxl_vel = cmd[i]/8.9*400; //Convert angular vel to raw data for dynamixels
+			dxl_vel = cmd[i]/8.9*385; //Convert angular vel to raw data for dynamixels
 			dxl_comm_result = packetHandler->write4ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_GOAL_VELOCITY, dxl_vel, &dxl_error);
 			if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to write velocity for Dynamixel ID %d", joint_IDs[i]);}
 		}
 
 		//Debug
-		ROS_INFO("SETTING:\n\tRIGHT_WHEEL: %f\n\tLEFT_WHEEL: %f", cmd[RIGHT_WHEEL],cmd[LEFT_WHEEL]);
+		// ROS_INFO("SETTING:\n\tRIGHT_WHEEL: %f\n\tLEFT_WHEEL: %f", cmd[RIGHT_WHEEL],cmd[LEFT_WHEEL]);
 	}
 
 	void read(const ros::Time &time){
@@ -108,8 +108,8 @@ public: //Methods
 		}
 
 		//Debug
-		ROS_INFO("READING:\n\tRIGHT_WHEEL_VEL: %f\n\tLEFT_WHEEL_VEL: %f", vel[RIGHT_WHEEL],vel[LEFT_WHEEL]);
-	 	ROS_INFO("READING:\n\tRIGHT_WHEEL_POS: %f\n\tLEFT_WHEEL_POS: %f", pos[RIGHT_WHEEL],pos[LEFT_WHEEL]);
+		// ROS_INFO("READING:\n\tRIGHT_WHEEL_VEL: %f\n\tLEFT_WHEEL_VEL: %f", vel[RIGHT_WHEEL],vel[LEFT_WHEEL]);
+	 	// ROS_INFO("READING:\n\tRIGHT_WHEEL_POS: %f\n\tLEFT_WHEEL_POS: %f", pos[RIGHT_WHEEL],pos[LEFT_WHEEL]);
   	}
 };
 
