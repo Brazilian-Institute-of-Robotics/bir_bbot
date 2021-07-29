@@ -200,7 +200,7 @@
         <inertia ixx="1.4e-7" ixy="0.0" ixz="0.0" iyy="2.4e-7" iyz="0.0" izz="1.2e-7" />
       </inertial>
       <visual>
-        <origin xyz="0.0 0.0 0.01" rpy="0 0 0" />
+        <origin xyz="0.023 0.036 -0.15" rpy="0 0 -1.57" />
         <geometry>
           <mesh filename="package://bbot_description/meshes/visual/RspCameraV2.dae"  scale="1 1 1"/>
         </geometry>
@@ -278,7 +278,7 @@
     <joint name="base2cam" type="fixed">
       <parent link="main_base"/>
       <child link="RspCameraV2"/>
-      <origin xyz="0.0 0.13 0.0" rpy="1.57 -1.57 0" />
+      <origin xyz="0.023 -0.03 0.036" rpy="1.57 3.14 0" />
     </joint>
 
 <!-- TRANSMISSION -->
@@ -399,7 +399,7 @@
     <joint name="camera_joint" type="fixed">
         <parent link="RspCameraV2" />
         <child link="camera_frame_gazebo" />
-        <origin xyz="0.036 -0.023 0.16" rpy="1.57 -1.57 1.57" />
+        <origin xyz="0 0 0" rpy="1.57 -1.57 0" />
     </joint>
     <gazebo reference="camera_frame_gazebo">
       <sensor type="camera" name="raspberry_cam">
@@ -456,7 +456,7 @@
     <gazebo reference="lds_frame_gazebo">
       <sensor type="gpu_ray" name="lds_sensor">
         <pose>0 0 0 0 0 0</pose>
-        <visualize>false</visualize>
+        <visualize>true</visualize>
         <update_rate>40</update_rate>
         <ray>
           <scan>
@@ -469,7 +469,7 @@
           </scan>
           <range>
             <min>0.12</min>
-            <max>3.5</max>
+            <max>1.2</max>
             <resolution>0.01</resolution>
           </range>
           <noise>
@@ -480,7 +480,7 @@
         </ray>
         <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_gpu_laser.so">
           <topicName>/bbot/laser/scan</topicName>
-          <frameName>odom</frameName>
+          <frameName>lds_frame_gazebo</frameName>
         </plugin>
       </sensor>
     </gazebo>

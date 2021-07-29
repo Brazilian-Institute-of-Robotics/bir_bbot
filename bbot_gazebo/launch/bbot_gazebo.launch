@@ -2,22 +2,24 @@
   
   <!-- Config -->
   <arg name="rviz" default="true"/> 
+  <arg name="apriltag_world" default="true"/> 
   <param name="robot_description" textfile="$(find bbot_description)/urdf/bbot.urdf.xacro" />  
 
   <!-- World -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="$(find bbot_gazebo)/world/bbot.world"/>
+    <arg if="$(arg apriltag_world)" name="world_name" value="$(find bbot_gazebo)/world/bbot_apriltag.world"/>
+    <arg unless="$(arg apriltag_world)" name="world_name" value="$(find bbot_gazebo)/world/bbot.world"/>
     <arg name="paused" value="true"/>
   </include>
   
   <!-- Spaw Bbot -->
-  <node name="spawn_bbot" pkg="gazebo_ros" type="spawn_model" args="-file $(find bbot_description)/urdf/bbot.urdf.xacro -urdf -z 0.229 -Y -1.57 -model bbot"/>
+  <node name="spawn_bbot" pkg="gazebo_ros" type="spawn_model" args="-file $(find bbot_description)/urdf/bbot.urdf.xacro -urdf -x 5.0 -y 0.0 -z 0.229 -Y -1.57 -model bbot"/>
  
   <!-- Spaw Ramp -->
-  <!-- <node name="spawn_ramp" pkg="gazebo_ros" type="spawn_model" args="-file $(find bbot_description)/urdf/ramp.urdf.xacro -urdf -x 1.0 -y -1.0 -z 0.1 -model ramp"/> -->
+  <node name="spawn_ramp" pkg="gazebo_ros" type="spawn_model" args="-file $(find bbot_description)/urdf/ramp.urdf.xacro -urdf -x 1.0 -y -1.0 -z 0.1 -model ramp"/>
 
-  <!-- Spaw ChArUco -->
-  <!-- <node name="spawn_charuco" pkg="gazebo_ros" type="spawn_model" args="-file $(find bbot_description)/urdf/charuco.urdf.xacro -urdf -y 1.0 -z 1.0 -model charuco"/> -->
+  <!-- Spaw AprilTAG -->
+  <!-- <node name="spawn_charuco" pkg="gazebo_ros" type="spawn_model" args="-sdf -file $(find bbot_gazebo)/models/Apriltag36_11_00000/model.sdf -x 5.0 -y 5.0 -z 1.0 -R -1.57 -model AprilTAG"/> -->
 
   <!-- Control -->
   <include file="$(find bbot_control)/launch/bbot_control.launch"/>
