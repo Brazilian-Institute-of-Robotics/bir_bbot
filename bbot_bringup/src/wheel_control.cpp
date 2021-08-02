@@ -49,6 +49,7 @@ using namespace dynamixel;
 #define ADDR_GOAL_POSITION    116
 #define ADDR_GOAL_VELOCITY    104
 #define ADDR_PRESENT_POSITION 132
+#define ADDR_PRESENT_VELOCITY 128
 
 // Protocol version
 #define PROTOCOL_VERSION      2.0             // Default Protocol version of DYNAMIXEL X series.
@@ -57,7 +58,7 @@ using namespace dynamixel;
 #define DXL1_ID               12               // RIGHT_WHEEL
 //#define DXL2_ID               2               // LEFT_WHEEL
 #define BAUDRATE              1000000           // 1Mbps
-#define DEVICE_NAME           "/dev/ttyUSB0"  // [Linux] To find assigned port, use "$ ls /dev/ttyUSB*" command
+#define DEVICE_NAME           "/dev/ttyUSB1"  // [Linux] To find assigned port, use "$ ls /dev/ttyUSB*" command
 
 PortHandler * portHandler;
 PacketHandler * packetHandler;
@@ -105,20 +106,21 @@ void setPositionCallback(const dynamixel_sdk_examples::SetPosition::ConstPtr & m
 
 void setVelocityCallback(const dynamixel_sdk_examples::SetPosition::ConstPtr & msg)
 {
-  uint8_t dxl_error = 0;
-  int dxl_comm_result = COMM_TX_FAIL;
+    uint8_t dxl_error = 0;
+    int dxl_comm_result = COMM_TX_FAIL;
 
-  // Position Value of X series is 4 byte data. For AX & MX(1.0) use 2 byte data(uint16_t) for the Position Value.
-  uint32_t velocity = (unsigned int)msg->position; // Convert int16 -> uint16
+    // Position Value of X series is 4 byte data. For AX & MX(1.0) use 2 byte data(uint16_t) for the Position Value.
+    uint32_t velocity = (unsigned int)msg->position; // Convert int16 -> uint16
+    uint32_t curr_vel;
 
-  // Write 2Byte Data for XM430
-  dxl_comm_result = packetHandler->write4ByteTxRx(
-    portHandler, (uint8_t)msg->id, ADDR_GOAL_VELOCITY, velocity, &dxl_error);
-  if (dxl_comm_result == COMM_SUCCESS) {
-    ROS_INFO("setVelocity : [ID:%d] [VELOCITY:%d]", msg->id, msg->position);
-  } else {
-    ROS_ERROR("Failed to set velocity! Result: %d", dxl_comm_result);
-  }
+    // Write 2Byte Data for XM430
+    dxl_comm_result = packetHandler->write4ByteTxRx(portHandler, (uint8_t)msg->id, ADDR_GOAL_VELOCITY, velocity, &dxl_error);
+    if (dxl_comm_result == COMM_SUCCESS) {
+      packetHandler->read4ByteTxRx(portHandler, 12, ADDR_PRESENT_VELOCITY, (uint32_t *)&curr_vel, &dxl_error);
+      ROS_INFO("setVelocity : [ID:%d] [VELOCITY:%d]", msg->id, curr_vel);
+    } else {
+      ROS_ERROR("Failed to set velocity! Result: %d", dxl_comm_result);
+    }
 }
 
 int main(int argc, char ** argv)
@@ -141,7 +143,7 @@ int main(int argc, char ** argv)
 
   dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, DXL1_ID, ADDR_TORQUE_ENABLE, 0, &dxl_error);
   if (dxl_comm_result != COMM_SUCCESS) {
-    ROS_ERROR("Failed to enable torque for Dynamixel ID %d", DXL1_ID);
+    ROS_ERROR("Failed to disable torque for Dynamixel ID %d", DXL1_ID);
     return -1;
   }
 

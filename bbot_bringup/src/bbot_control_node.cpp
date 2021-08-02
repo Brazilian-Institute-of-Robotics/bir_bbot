@@ -20,7 +20,7 @@
 #define RIGHT_WHEEL_ID              12               	// RIGHT_WHEEL
 #define LEFT_WHEEL_ID               22               	// LEFT_WHEEL
 #define BAUDRATE              		1000000          	// 1Mbps
-#define DEVICE_NAME           		"/dev/ttyUSB0" 		// Port for communication with dynamixels
+#define DEVICE_NAME           		"/dev/ttyUSB1" 		// Port for communication with dynamixels
 
 dynamixel::PortHandler * portHandler;		//Manage communication with dynamixels via USB
 dynamixel::PacketHandler * packetHandler;	//Access dynamixels EEPROM and RAM for reading and writing
@@ -84,20 +84,20 @@ public: //Methods
 	}
 
 	void write(const ros::Time &time){
-		static double dxl_vel;
+		int32_t velocity;
 		// Write wheels angular velocity
 		for(size_t i=0; i< 2; i++){
-			dxl_vel = cmd[i]/8.9*385; //Convert angular vel to raw data for dynamixels
-			dxl_comm_result = packetHandler->write4ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_GOAL_VELOCITY, dxl_vel, &dxl_error);
+			velocity = (int32_t) (cmd[i]/10*390); //Convert angular vel to raw data for dynamixels
+			dxl_comm_result = packetHandler->write4ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_GOAL_VELOCITY, velocity, &dxl_error);
 			if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to write velocity for Dynamixel ID %d", joint_IDs[i]);}
 		}
-
+		
 		//Debug
-		// ROS_INFO("SETTING:\n\tRIGHT_WHEEL: %f\n\tLEFT_WHEEL: %f", cmd[RIGHT_WHEEL],cmd[LEFT_WHEEL]);
+		//ROS_INFO("CMD: %f, SETTING: %d\n",cmd[1], velocity);
 	}
 
 	void read(const ros::Time &time){
-		static uint32_t dxl_pos, dxl_vel;
+		int32_t dxl_pos, dxl_vel;
 		for(size_t i=0; i< 2; i++){
 			dxl_comm_result = packetHandler->read4ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_PRESENT_VELOCITY, (uint32_t *)&dxl_vel, &dxl_error);
 			if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to read velocity for Dynamixel ID %d", joint_IDs[i]);}
