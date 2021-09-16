@@ -8,6 +8,12 @@ project(bbot_control)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  controller_interface
+  hardware_interface
+  geometry_msgs
+  pluginlib
+  tf
+  sensor_msgs
   roscpp
   rospy
   std_msgs
@@ -105,8 +111,8 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES bbot_control
-#  CATKIN_DEPENDS roscpp rospy std_msgs
-#  DEPENDS system_lib
+  CATKIN_DEPENDS roscpp rospy std_msgs controller_interface hardware_interface geometry_msgs pluginlib tf sensor_msgs
+  #  DEPENDS system_lib
 )
 
 ###########
@@ -134,6 +140,8 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/bbot_control_node.cpp)
+add_executable(LQR_controller src/LQR_controller.cpp)
+target_link_libraries(LQR_controller ${catkin_LIBRARIES})
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
