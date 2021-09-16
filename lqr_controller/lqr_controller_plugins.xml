@@ -1,0 +1,12 @@
+
+<library path="lib/liblqr_controller">
+
+  <class name="lqr_controller/LQRController" 
+        type="lqr_controller::LQRController" 
+        base_class_type="controller_interface::ControllerBase">
+    <description>
+      The LQR controller stabilizes Bbot by applying torque control to 2 Joints with EffortJointInterface type of hardware interfaces.
+    </description>
+  </class>
+
+</library>

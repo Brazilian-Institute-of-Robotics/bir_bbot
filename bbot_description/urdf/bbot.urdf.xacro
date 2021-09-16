@@ -335,10 +335,10 @@
   <transmission name="trans_right_bottom_leg2wheel">
       <type>transmission_interface/SimpleTransmission</type>
       <joint name="right_bottom_leg2wheel">
-          <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+          <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
       </joint>
       <actuator name="motor_right_bottom_leg2wheel">
-        <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         <mechanicalReduction>1</mechanicalReduction>
       </actuator>
   </transmission>
@@ -346,10 +346,10 @@
   <transmission name="trans_left_bottom_leg2wheel">
       <type>transmission_interface/SimpleTransmission</type>
       <joint name="left_bottom_leg2wheel">
-          <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+          <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
       </joint>
       <actuator name="motor_left_bottom_leg2wheel">
-        <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         <mechanicalReduction>1</mechanicalReduction>
       </actuator>
   </transmission>
