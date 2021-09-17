@@ -42,10 +42,15 @@ bbot:
     constraints:
       goal_time: 0.0
 
+  # mobile_base_controller:
+  #   type: my_controller/MyPositionController
+  #   joint: left_bottom_leg2wheel
+  #   gain: 0.1
+    
   mobile_base_controller:
-    type        : "lqr_controller/LQRController"
-    left_wheel  : 'left_bottom_leg2wheel'
-    right_wheel : 'right_bottom_leg2wheel'
+    type        : lqr_controller/LQRController
+    left_wheel : left_bottom_leg2wheel
+    right_wheel : right_bottom_leg2wheel
     # publish_rate: 50.0               # default: 50
     # pose_covariance_diagonal : [0.001, 0.001, 1000000.0, 1000000.0, 1000000.0, 1000.0]
     # twist_covariance_diagonal: [0.001, 0.001, 1000000.0, 1000000.0, 1000000.0, 1000.0]

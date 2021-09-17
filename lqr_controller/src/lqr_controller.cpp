@@ -10,9 +10,6 @@ namespace lqr_controller{
 
 class LQRController : public controller_interface::Controller<hardware_interface::EffortJointInterface>
 {
-public:
-
-  LQRController();
 
   bool init(hardware_interface::EffortJointInterface* hw, ros::NodeHandle &n)
   {
@@ -37,9 +34,10 @@ public:
     // double Ki[2][2] = { 0.0213273361882235, 0.0209403216014921;
     //                     0.0213273361882235, -0.0209403216014921};    
 
-    imu_msgs_ = n.subscribe("imu_msgs", 1, &LQRController::imu_msgsCallback, this);
+    imu_msgs_ = n.subscribe<sensor_msgs::Imu>("/bbot/imu", 1, &LQRController::imu_msgsCallback, this);
 
-    cmd_vel_ = n.subscribe("cmd_vel", 1, &LQRController::cmd_velCallback, this);                    
+    cmd_vel_ = n.subscribe<geometry_msgs::Twist>("cmd_vel", 1, &LQRController::cmd_velCallback, this);                    
+    
     return true;
   }
 
@@ -77,50 +75,50 @@ public:
   }
 
   // Save IMU info
-  void imu_msgsCallback(const sensor_msgs::Imu& data){
+  void imu_msgsCallback(const sensor_msgs::ImuConstPtr& data){
     tf::Quaternion quat_angle;
 
-    tf::quaternionMsgToTF(data.orientation, quat_angle);
+    tf::quaternionMsgToTF(data->orientation, quat_angle);
 
     tf::Matrix3x3(quat_angle).getRPY(roll_angle, pitch_angle, yaw_angle);
-    roll_vel = data.angular_velocity.x;
-    pitch_vel = data.angular_velocity.y;
-    yaw_vel = data.angular_velocity.z;
+    roll_vel = data->angular_velocity.x;
+    pitch_vel = data->angular_velocity.y;
+    yaw_vel = data->angular_velocity.z;
   }
 
   // Save user commands info
-  void cmd_velCallback(const geometry_msgs::Twist& data){
-    x_ref = data.linear.x;
-    yaw_ref = data.angular.z;
+  void cmd_velCallback(const geometry_msgs::TwistConstPtr& data){
+    x_ref = data->linear.x;
+    yaw_ref = data->angular.z;
   }
 
   void starting(const ros::Time& time) { }
   void stopping(const ros::Time& time) { }
 
-private:
-  hardware_interface::JointHandle left_wheel_joint_;
-  hardware_interface::JointHandle right_wheel_joint_;
+  private:
+    hardware_interface::JointHandle left_wheel_joint_;
+    hardware_interface::JointHandle right_wheel_joint_;
 
-  double roll_angle = 0.0;
-  double pitch_angle = 0.0;
-  double yaw_angle = 0.0;
+    double roll_angle = 0.0;
+    double pitch_angle = 0.0;
+    double yaw_angle = 0.0;
 
-  double roll_vel = 0.0;
-  double pitch_vel = 0.0;
-  double yaw_vel = 0.0;
+    double roll_vel = 0.0;
+    double pitch_vel = 0.0;
+    double yaw_vel = 0.0;
 
-  double x_vel_int_error = 0.0;
-  double yaw_vel_int_error = 0.0;
+    double x_vel_int_error = 0.0;
+    double yaw_vel_int_error = 0.0;
 
-  double x_ref = 0.0;
-  double yaw_ref = 0.0;
+    double x_ref = 0.0;
+    double yaw_ref = 0.0;
 
-  ros::Subscriber imu_msgs_;
-  ros::Subscriber cmd_vel_;
+    ros::Subscriber imu_msgs_;
+    ros::Subscriber cmd_vel_;
 
-// Get K matrix
-  double K[2][6] = {{-1.72736044378686, -0.830134477480645, -0.122691884068007, -4.31056054310816, 0.0213273361882235, 0.0209403216014921},
-                    {-1.72736044378686, -0.830134477480645, 0.122691884068007, -4.31056054310816, 0.0213273361882235, -0.0209403216014921}};
+  // Get K matrix
+    double K[2][6] = {{-1.72736044378686, -0.830134477480645, -0.122691884068007, -4.31056054310816, 0.0213273361882235, 0.0209403216014921},
+                      {-1.72736044378686, -0.830134477480645, 0.122691884068007, -4.31056054310816, 0.0213273361882235, -0.0209403216014921}};
 };
 PLUGINLIB_EXPORT_CLASS(lqr_controller::LQRController, controller_interface::ControllerBase);
 // PLUGINLIB_DECLARE_CLASS(LQRController::LQRController, controller_interface::ControllerBase);
