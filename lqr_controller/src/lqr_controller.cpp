@@ -5,6 +5,7 @@
 #include "sensor_msgs/Imu.h"
 #include "tf/transform_datatypes.h"
 #include "geometry_msgs/Twist.h"
+#include "std_msgs/Float64MultiArray.h"
 
 namespace lqr_controller{
 
@@ -26,52 +27,63 @@ class LQRController : public controller_interface::Controller<hardware_interface
 
     // get the joint object to use in the realtime loop
     left_wheel_joint_ = hw->getHandle(left_wheel);  // throws on failure
-    right_wheel_joint_ = hw->getHandle(right_wheel);  // throws on failure
-
-    // double Kp[2][4] = {-1.72736044378686, -0.830134477480645, -0.122691884068007, -4.31056054310816;
-    //                   -1.72736044378686, -0.830134477480645, 0.122691884068007, -4.31056054310816};
-
-    // double Ki[2][2] = { 0.0213273361882235, 0.0209403216014921;
-    //                     0.0213273361882235, -0.0209403216014921};    
+    right_wheel_joint_ = hw->getHandle(right_wheel);  // throws on failure  
 
     imu_msgs_ = n.subscribe<sensor_msgs::Imu>("/bbot/imu", 1, &LQRController::imu_msgsCallback, this);
 
     cmd_vel_ = n.subscribe<geometry_msgs::Twist>("cmd_vel", 1, &LQRController::cmd_velCallback, this);                    
     
+    bbot_states_pub_ = n.advertise<std_msgs::Float64MultiArray>("robot_states",1);
+    bbot_inputs_pub_ = n.advertise<std_msgs::Float64MultiArray>("robot_inputs",1);
+
+    last_pub_time = ros::Time::now().toSec();
     return true;
   }
 
-  void update(const ros::Time& time, const ros::Duration& period)
+  void update(const ros::Time& time, const ros::Duration& period) //Simulation period = 0.001 and Time is incremented by 0.001
   {
-    double left_wheel_vel = left_wheel_joint_.getVelocity();
-    double right_wheel_vel = right_wheel_joint_.getVelocity();
+    if(time.toSec() - last_pub_time >= 0.04){ //Keep commands at 25 Hz 
+      double left_wheel_vel = left_wheel_joint_.getVelocity(); // rad/s
+      double right_wheel_vel = right_wheel_joint_.getVelocity(); // rad/s
 
-    double robot_x_velocity = 0.05/2*(left_wheel_vel + right_wheel_vel); // r/2(thetaL + thetaR)
-    double robot_yaw_velocity = 0.05/0.1431*(left_wheel_vel - right_wheel_vel); // r/d(thetaL - thetaR)
+      double robot_x_velocity = 0.05/2*(left_wheel_vel + right_wheel_vel); // r/2(thetaL + thetaR)
+      double robot_yaw_velocity = 0.05/0.1431*(left_wheel_vel - right_wheel_vel); // r/d(thetaL - thetaR)
 
-    x_vel_int_error += x_ref - robot_x_velocity;   // get integral of the error
-    yaw_vel_int_error += yaw_ref - robot_yaw_velocity; // get integral of the error
+      x_vel_int_error += x_ref - robot_x_velocity;   // get integral of the error
+      yaw_vel_int_error += yaw_ref - robot_yaw_velocity; // get integral of the error
 
-    double states[6] = {robot_x_velocity, pitch_vel, robot_yaw_velocity, pitch_angle, x_vel_int_error, yaw_vel_int_error};
-    // double errors[2] = {x_vel_int_error, yaw_vel_int_error};
+      pitch_filtered = 0.6*pitch_filtered + 0.4*pitch_angle; //TODO test
 
-    // Perform matrix multiplication
-    double system_inputs[2] = {0.0, 0.0};
-    for(int i=0;i<2;i++){
-      for(int j=0;j<6;j++){
-        system_inputs[i] += K[i][j]*states[j];
+      std::vector<double> states = {robot_x_velocity, pitch_vel, yaw_vel, pitch_angle - 0.075, x_vel_int_error, -yaw_vel_int_error};
+
+      std_msgs::Float64MultiArray states_msg, inputs_msg;
+      states_msg.data = states;
+      bbot_states_pub_.publish(states_msg);
+
+      // Perform matrix multiplication
+      std::vector<double> system_inputs = {0.0, 0.0};
+      for(int i=0;i<2;i++){
+        for(int j=0;j<6;j++){
+          system_inputs[i] += K[i][j]*states[j];
+        }
       }
+      //Apply Saturation antiwindup
+      // for(int i=0;i<2;i++){
+      //   if(system_inputs[i] > 2)
+      //     system_inputs[i] = 0.5;
+      //   else if(system_inputs[i] < -0.5)
+      //     system_inputs[i] = -0.5;
+      // }
+      system_inputs[0] *= -1;
+      system_inputs[1] *= -1;
+      inputs_msg.data = system_inputs;
+
+      left_wheel_joint_.setCommand(system_inputs[0]);
+      right_wheel_joint_.setCommand(system_inputs[1]);
+      bbot_inputs_pub_.publish(inputs_msg);
+      // ROS_INFO("Pub %f", time.toSec() - last_pub_time);
+      last_pub_time = time.toSec();
     }
-
-    // double integral_part[2] = {0.0, 0.0};
-    // for(int i=0;i<2;i++){
-    //   for(int j=0;j<2;j++){
-    //     integral_part[i] += Kp[i][j]*errors[j];
-    //   }
-    // }
-
-    left_wheel_joint_.setCommand(system_inputs[0]);   //send commands
-    right_wheel_joint_.setCommand(system_inputs[1]);  //send commands
   }
 
   // Save IMU info
@@ -80,9 +92,10 @@ class LQRController : public controller_interface::Controller<hardware_interface
 
     tf::quaternionMsgToTF(data->orientation, quat_angle);
 
-    tf::Matrix3x3(quat_angle).getRPY(roll_angle, pitch_angle, yaw_angle);
-    roll_vel = data->angular_velocity.x;
-    pitch_vel = data->angular_velocity.y;
+    // Pitch and roll are inverted due to simulation issues
+    tf::Matrix3x3(quat_angle).getRPY(pitch_angle,roll_angle, yaw_angle);
+    pitch_vel = data->angular_velocity.x;
+    roll_vel = data->angular_velocity.y;
     yaw_vel = data->angular_velocity.z;
   }
 
@@ -93,11 +106,16 @@ class LQRController : public controller_interface::Controller<hardware_interface
   }
 
   void starting(const ros::Time& time) { }
-  void stopping(const ros::Time& time) { }
+  void stopping(const ros::Time& time) { 
+      x_vel_int_error = 0.0;
+      yaw_vel_int_error = 0.0;
+  }
 
   private:
     hardware_interface::JointHandle left_wheel_joint_;
     hardware_interface::JointHandle right_wheel_joint_;
+
+    double last_pub_time;
 
     double roll_angle = 0.0;
     double pitch_angle = 0.0;
@@ -113,12 +131,16 @@ class LQRController : public controller_interface::Controller<hardware_interface
     double x_ref = 0.0;
     double yaw_ref = 0.0;
 
+    double pitch_filtered = 0.0;
+
     ros::Subscriber imu_msgs_;
     ros::Subscriber cmd_vel_;
+    ros::Publisher bbot_states_pub_;
+    ros::Publisher bbot_inputs_pub_;
 
-  // Get K matrix
-    double K[2][6] = {{-1.72736044378686, -0.830134477480645, -0.122691884068007, -4.31056054310816, 0.0213273361882235, 0.0209403216014921},
-                      {-1.72736044378686, -0.830134477480645, 0.122691884068007, -4.31056054310816, 0.0213273361882235, -0.0209403216014921}};
+    // Get K matrix Pose C               
+    double K[2][6] = {{-0.351342726830498, -0.136414901229862, -0.0590995944246939, -1.08273414375471, 0.00177016409511773,  0.0186040640917086},
+                      {-0.351342726830253, -0.136414901229804,  0.0590995944246846, -1.08273414375414, 0.00177016409511191, -0.0186040640917081}};
 };
 PLUGINLIB_EXPORT_CLASS(lqr_controller::LQRController, controller_interface::ControllerBase);
 // PLUGINLIB_DECLARE_CLASS(LQRController::LQRController, controller_interface::ControllerBase);

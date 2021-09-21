@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   hardware_interface
   pluginlib
   roscpp
+  std_msgs
 )
 
 ## System dependencies are found with CMake's conventions

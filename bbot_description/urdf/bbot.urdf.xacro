@@ -456,7 +456,7 @@
     <gazebo reference="lds_frame_gazebo">
       <sensor type="gpu_ray" name="lds_sensor">
         <pose>0 0 0 0 0 0</pose>
-        <visualize>true</visualize>
+        <visualize>false</visualize>
         <update_rate>40</update_rate>
         <ray>
           <scan>
