@@ -14,7 +14,7 @@ class LQRController : public controller_interface::Controller<hardware_interface
 
   bool init(hardware_interface::EffortJointInterface* hw, ros::NodeHandle &n)
   {
-    // get joint name from the parameter server
+    // GET parameters from Param Server
     std::string left_wheel, right_wheel;
     if (!n.getParam("left_wheel", left_wheel)){
       ROS_ERROR("Could not find left_wheel joint name");
@@ -24,35 +24,55 @@ class LQRController : public controller_interface::Controller<hardware_interface
       ROS_ERROR("Could not find right_wheel joint name");
       return false;
     }
+    if (!n.getParam("wheel_separation", wheel_separation)){
+      ROS_ERROR("Could not find wheel_separation");
+      return false;
+    }
+    if (!n.getParam("wheel_radius", wheel_radius)){
+      ROS_ERROR("Could not find wheel_radius");
+      return false;
+    }
+    if (!n.getParam("K_l1", K_matrix[0])){
+      ROS_ERROR("Could not find first line of the K gain matrix");
+      return false;
+    }
+    if (!n.getParam("K_l2", K_matrix[1])){
+      ROS_ERROR("Could not find second line of the K gain matrix");
+      return false;
+    }
+    if (!n.getParam("control_period", control_period)){
+      ROS_ERROR("Could not find control_period");
+      return false;
+    }
 
     // get the joint object to use in the realtime loop
     left_wheel_joint_ = hw->getHandle(left_wheel);  // throws on failure
-    right_wheel_joint_ = hw->getHandle(right_wheel);  // throws on failure  
+    right_wheel_joint_ = hw->getHandle(right_wheel);  // throws on failure 
 
+    // set ROS interface topics
     imu_msgs_ = n.subscribe<sensor_msgs::Imu>("/bbot/imu", 1, &LQRController::imu_msgsCallback, this);
-
     cmd_vel_ = n.subscribe<geometry_msgs::Twist>("cmd_vel", 1, &LQRController::cmd_velCallback, this);                    
     
+    // set debug topics
     bbot_states_pub_ = n.advertise<std_msgs::Float64MultiArray>("robot_states",1);
     bbot_inputs_pub_ = n.advertise<std_msgs::Float64MultiArray>("robot_inputs",1);
 
+    // get current time
     last_pub_time = ros::Time::now().toSec();
     return true;
   }
 
   void update(const ros::Time& time, const ros::Duration& period) //Simulation period = 0.001 and Time is incremented by 0.001
   {
-    if(time.toSec() - last_pub_time >= 0.04){ //Keep commands at 25 Hz 
+    if(time.toSec() - last_pub_time >= control_period){ //Keep commands at 25 Hz 
       double left_wheel_vel = left_wheel_joint_.getVelocity(); // rad/s
       double right_wheel_vel = right_wheel_joint_.getVelocity(); // rad/s
 
-      double robot_x_velocity = 0.05/2*(left_wheel_vel + right_wheel_vel); // r/2(thetaL + thetaR)
-      double robot_yaw_velocity = 0.05/0.1431*(left_wheel_vel - right_wheel_vel); // r/d(thetaL - thetaR)
+      double robot_x_velocity = wheel_radius/2*(left_wheel_vel + right_wheel_vel); // r/2(thetaL + thetaR)
+      double robot_yaw_velocity = wheel_radius/wheel_separation*(left_wheel_vel - right_wheel_vel); // r/d(thetaL - thetaR)
 
       x_vel_int_error += x_ref - robot_x_velocity;   // get integral of the error
       yaw_vel_int_error += yaw_ref - robot_yaw_velocity; // get integral of the error
-
-      pitch_filtered = 0.6*pitch_filtered + 0.4*pitch_angle; //TODO test
 
       std::vector<double> states = {robot_x_velocity, pitch_vel, yaw_vel, pitch_angle - 0.075, x_vel_int_error, -yaw_vel_int_error};
 
@@ -64,16 +84,18 @@ class LQRController : public controller_interface::Controller<hardware_interface
       std::vector<double> system_inputs = {0.0, 0.0};
       for(int i=0;i<2;i++){
         for(int j=0;j<6;j++){
-          system_inputs[i] += K[i][j]*states[j];
+          system_inputs[i] += K_matrix[i][j]*states[j];
         }
       }
-      //Apply Saturation antiwindup
+
+      //Apply Saturation to the inputs
       // for(int i=0;i<2;i++){
       //   if(system_inputs[i] > 2)
       //     system_inputs[i] = 0.5;
       //   else if(system_inputs[i] < -0.5)
       //     system_inputs[i] = -0.5;
       // }
+      
       system_inputs[0] *= -1;
       system_inputs[1] *= -1;
       inputs_msg.data = system_inputs;
@@ -106,6 +128,7 @@ class LQRController : public controller_interface::Controller<hardware_interface
   }
 
   void starting(const ros::Time& time) { }
+
   void stopping(const ros::Time& time) { 
       x_vel_int_error = 0.0;
       yaw_vel_int_error = 0.0;
@@ -116,6 +139,10 @@ class LQRController : public controller_interface::Controller<hardware_interface
     hardware_interface::JointHandle right_wheel_joint_;
 
     double last_pub_time;
+    double wheel_separation;
+    double wheel_radius;
+    double control_period;
+    std::vector<std::vector<double>> K_matrix = std::vector<std::vector<double>>(2,std::vector<double>(6, 0.0));
 
     double roll_angle = 0.0;
     double pitch_angle = 0.0;
@@ -139,9 +166,8 @@ class LQRController : public controller_interface::Controller<hardware_interface
     ros::Publisher bbot_inputs_pub_;
 
     // Get K matrix Pose C               
-    double K[2][6] = {{-0.351342726830498, -0.136414901229862, -0.0590995944246939, -1.08273414375471, 0.00177016409511773,  0.0186040640917086},
-                      {-0.351342726830253, -0.136414901229804,  0.0590995944246846, -1.08273414375414, 0.00177016409511191, -0.0186040640917081}};
+    // double K[2][6] = {{-0.351342726830498, -0.136414901229862, -0.0590995944246939, -1.08273414375471, 0.00177016409511773,  0.0186040640917086},
+    //                   {-0.351342726830253, -0.136414901229804,  0.0590995944246846, -1.08273414375414, 0.00177016409511191, -0.0186040640917081}};
 };
 PLUGINLIB_EXPORT_CLASS(lqr_controller::LQRController, controller_interface::ControllerBase);
-// PLUGINLIB_DECLARE_CLASS(LQRController::LQRController, controller_interface::ControllerBase);
 }//namespace

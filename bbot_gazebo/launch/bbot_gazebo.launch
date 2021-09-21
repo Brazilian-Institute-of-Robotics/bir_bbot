@@ -2,7 +2,7 @@
   
   <!-- Config -->
   <arg name="rviz" default="true"/> 
-  <arg name="apriltag_world" default="true"/> 
+  <arg name="apriltag_world" default="false"/> 
   <param name="robot_description" textfile="$(find bbot_description)/urdf/bbot.urdf.xacro" />  
 
   <!-- World -->

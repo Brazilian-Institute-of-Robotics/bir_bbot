@@ -48,44 +48,12 @@ bbot:
   #   gain: 0.1
     
   mobile_base_controller:
-    type        : lqr_controller/LQRController
-    left_wheel : left_bottom_leg2wheel
-    right_wheel : right_bottom_leg2wheel
-    # publish_rate: 50.0               # default: 50
-    # pose_covariance_diagonal : [0.001, 0.001, 1000000.0, 1000000.0, 1000000.0, 1000.0]
-    # twist_covariance_diagonal: [0.001, 0.001, 1000000.0, 1000000.0, 1000000.0, 1000.0]
-
-    # # Wheel separation and diameter. These are both optional.
-    # # diff_drive_controller will attempt to read either one or both from the
-    # # URDF if not specified as a parameter
-    # wheel_separation : 0.142
-    # wheel_radius : 0.05
-
-    # # Wheel separation and radius multipliers
-    # wheel_separation_multiplier: 1.0 # default: 1.0
-    # wheel_radius_multiplier    : 1.0 # default: 1.0
-
-    # # Velocity commands timeout [s], default 0.5
-    # cmd_vel_timeout: 0.25
-
-    # # Base frame_id
-    # base_frame_id: base_link #default: base_link
-
-    # # Velocity and acceleration limits
-    # # Whenever a min_* is unspecified, default to -max_*
-    # linear:
-    #   x:
-    #     has_velocity_limits    : true #true
-    #     max_velocity           : 0.5  #0.3667 m/s
-    #     has_acceleration_limits: true #true
-    #     max_acceleration       : 8.0  #0.2 m/s^2
-    #     # has_jerk_limits        : true
-    #     # max_jerk               : 1.0  # m/s^3
-    # angular:
-    #   z:
-    #     has_velocity_limits    : true
-    #     max_velocity           : 7.3303  # rad/s
-    #     has_acceleration_limits: true
-    #     max_acceleration       : 7  # rad/s^2
-    #     # has_jerk_limits        : true
-    #     # max_jerk               : 2.5  # rad/s^3
+    type: lqr_controller/LQRController
+    left_wheel: left_bottom_leg2wheel
+    right_wheel: right_bottom_leg2wheel
+    control_period: 0.04 # seconds = 25 Hz
+    wheel_separation: 0.1431  # meters
+    wheel_radius: 0.05        # meters
+    # The first and second line of the K gain matrix
+    K_l1: [-0.351342726830498, -0.136414901229862, -0.0590995944246939, -1.08273414375471, 0.00177016409511773,  0.0186040640917086]
+    K_l2: [-0.351342726830253, -0.136414901229804,  0.0590995944246846, -1.08273414375414, 0.00177016409511191, -0.0186040640917081]
