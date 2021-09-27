@@ -8,13 +8,11 @@
 
 // Control table addresses for Wheels (XM430-W210)
 #define WHEEL_ADDR_TORQUE_ENABLE    64
-#define WHEEL_ADDR_OPERATION_MODE   11
-#define WHEEL_ADDR_GOAL_VELOCITY    104
-#define WHEEL_ADDR_PRESENT_POSITION 132
+#define WHEEL_ADDR_OPERATION_MODE   11 //CURRENT CONTROL
+#define WHEEL_ADDR_GOAL_CURRENT    102
+// #define WHEEL_ADDR_PRESENT_POSITION 132
 #define WHEEL_ADDR_PRESENT_VELOCITY 128
 #define WHEEL_ADDR_DRIVE_MODE 		10
-#define WHEEL_ADDR_VELOCITY_KP 		78
-#define WHEEL_ADDR_VELOCITY_KI		76
 
 // Control table addresses for Legs (MX-106)
 #define LEG_ADDR_TORQUE_ENABLE   	64
@@ -53,7 +51,7 @@ private: //Variables
 	//BbotHardware vars
 	enum Joints{RIGHT_WHEEL, LEFT_WHEEL};
 	hardware_interface::JointStateInterface joint_state_interface_;
-	hardware_interface::VelocityJointInterface velocity_joint_interface_;
+	hardware_interface::EffortJointInterface effort_joint_interface_;
 	hardware_interface::PositionJointInterface position_joint_interface_;
 	double cmd[6];
 	double pos[6];
@@ -72,7 +70,7 @@ public: //Methods
 			joint_state_interface_.registerHandle(joint_state_handle);
 
 			hardware_interface::JointHandle joint_handle(joint_state_handle, &cmd[i]);
-			velocity_joint_interface_.registerHandle(joint_handle);
+			effort_joint_interface_.registerHandle(joint_handle);
 		}
 		//Define the hardware interfaces for the leg joints
 		for(size_t i=2; i < 6; i++){
@@ -89,7 +87,7 @@ public: //Methods
 		}
 		//Register hardware interfaces of the robot
 		registerInterface(&joint_state_interface_);
-		registerInterface(&velocity_joint_interface_);
+		registerInterface(&effort_joint_interface_);
 		registerInterface(&position_joint_interface_);
 
 		//Dynamixel setup
@@ -104,8 +102,8 @@ public: //Methods
 			dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_TORQUE_ENABLE, 0, &dxl_error); //TurnOFF Torque in order to acces the EEPROM area
 			if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to disable torque for Dynamixel ID %d", joint_IDs[i]);}
 			
-			dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_OPERATION_MODE, 1, &dxl_error); // TurnON Velocity control Mode
-			if (dxl_comm_result != COMM_SUCCESS){ROS_ERROR("Failed to set Velocity control Mode for Dynamixel ID %d", joint_IDs[i]);}
+			dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_OPERATION_MODE, 0, &dxl_error); // TurnON Current control Mode
+			if (dxl_comm_result != COMM_SUCCESS){ROS_ERROR("Failed to set Current control Mode for Dynamixel ID %d", joint_IDs[i]);}
 			if (i == RIGHT_WHEEL){dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_DRIVE_MODE, 1, &dxl_error);} // Set Right wheel to reverse mode
 			
 			dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_TORQUE_ENABLE, 1, &dxl_error); //TurnON Torque
@@ -117,7 +115,7 @@ public: //Methods
 			if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to disable torque for Dynamixel ID %d", joint_IDs[i]);}
 			
 			dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, joint_IDs[i], LEG_ADDR_OPERATION_MODE, 3, &dxl_error); // TurnON Velocity control Mode
-			if (dxl_comm_result != COMM_SUCCESS){ROS_ERROR("Failed to set Velocity control Mode for Dynamixel ID %d", joint_IDs[i]);}
+			if (dxl_comm_result != COMM_SUCCESS){ROS_ERROR("Failed to set Position control Mode for Dynamixel ID %d", joint_IDs[i]);}
 			
 			dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, joint_IDs[i], LEG_ADDR_POSITION_KP, 300, &dxl_error); // Set position Kp
 			if (dxl_comm_result != COMM_SUCCESS){ROS_ERROR("Failed to set Pos KP for Dynamixel ID %d", joint_IDs[i]);}
@@ -131,13 +129,13 @@ public: //Methods
 	}
 
 	void write(const ros::Time &time){
-		int32_t velocity, position;
+		int32_t current, position;
 
-		// Write wheels angular velocity
+		// Write wheels current
 		for(size_t i=0; i< 2; i++){
-			velocity = (int32_t) (cmd[i]/10*390); //Convert angular vel to raw data for dynamixels
-			dxl_comm_result = packetHandler->write4ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_GOAL_VELOCITY, velocity, &dxl_error);
-			if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to write velocity for Dynamixel ID %d", joint_IDs[i]);}
+			current = (int32_t) (1193*0.5/3); // (()) Convert torque to raw data for dynamixels current
+			dxl_comm_result = packetHandler->write4ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_GOAL_CURRENT, current, &dxl_error);
+			if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to write current for Dynamixel ID %d", joint_IDs[i]);}
 		}
 
 		// Write legs angular position
@@ -148,7 +146,7 @@ public: //Methods
 				position = (int32_t) (4095-cmd[i]/1.57*1024); //Convert angular pos to raw data for BOTTOM dynamixels
 			
 			dxl_comm_result = packetHandler->write4ByteTxRx(portHandler, joint_IDs[i], LEG_ADDR_GOAL_POSITION, position, &dxl_error);
-			if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to write velocity for Dynamixel ID %d", joint_IDs[i]);}
+			if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to write position for Dynamixel ID %d", joint_IDs[i]);}
 		}
 	}
 
@@ -158,10 +156,10 @@ public: //Methods
 		for(size_t i=0; i< 2; i++){
 			dxl_comm_result = packetHandler->read4ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_PRESENT_VELOCITY, (uint32_t *)&dxl_vel, &dxl_error);
 			if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to read velocity for Dynamixel ID %d", joint_IDs[i]);}
-			dxl_comm_result = packetHandler->read4ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_PRESENT_POSITION, (uint32_t *)&dxl_pos, &dxl_error);
-			if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to read position for Dynamixel ID %d", joint_IDs[i]);}
-			vel[i] = (double) (dxl_vel*0.229*M_PI/30); 	//Convert raw data to rad/s
-			pos[i] = (double) dxl_pos*0.00153398;		//Convert raw data to rad
+			// dxl_comm_result = packetHandler->read4ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_PRESENT_POSITION, (uint32_t *)&dxl_pos, &dxl_error);
+			// if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to read position for Dynamixel ID %d", joint_IDs[i]);}
+			vel[i] = (double) (dxl_vel); 	//Convert raw data to N.m
+			// pos[i] = (double) dxl_pos*0.00153398;		//Convert raw data to rad
 		}
 		// Read leg states
 		for(size_t i=2; i< 6; i++){
@@ -194,7 +192,7 @@ int main(int argc, char **argv) {
 	BbotHardware bbot_hardware(nh);
 	controller_manager::ControllerManager cm(&bbot_hardware, nh);
 
-	ros::Duration period(0.01); // 100Hz
+	ros::Duration period(0.01); // 25Hz
 	ros::Time last_time = ros::Time::now();
 
 	while (ros::ok()) {
