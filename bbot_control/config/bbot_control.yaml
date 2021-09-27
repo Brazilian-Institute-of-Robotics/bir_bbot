@@ -7,40 +7,20 @@ bbot:
   # Position Controllers ---------------------------------------    
        
   base2right_top_leg_position_controller:
-    type: effort_controllers/JointTrajectoryController
-    joints: 
-      - base2right_top_leg
-    gains:
-      base2right_top_leg: {p: 100.0, i: 0.1, d: 0.01} #10 0.1 0.01
-    constraints:
-      goal_time: 0.0
+    type: position_controllers/JointPositionController
+    joint: base2right_top_leg
 
   base2left_top_leg_position_controller:
-    type: effort_controllers/JointTrajectoryController
-    joints: 
-      - base2left_top_leg
-    gains:
-      base2left_top_leg: {p: 100.0, i: 0.1, d: 0.01}
-    constraints:
-      goal_time: 0.0
+    type: position_controllers/JointPositionController
+    joint: base2left_top_leg
   
   right_top_leg2bottom_leg_position_controller:
-    type: effort_controllers/JointTrajectoryController
-    joints: 
-      - right_top_leg2bottom_leg
-    gains:
-      right_top_leg2bottom_leg: {p: 100.0, i: 0.1, d: 2.0} #10 0.1 0.01
-    constraints:
-      goal_time: 0.0
+    type: position_controllers/JointPositionController
+    joint: right_top_leg2bottom_leg
 
   left_top_leg2bottom_leg_position_controller:
-    type: effort_controllers/JointTrajectoryController
-    joints: 
-      - left_top_leg2bottom_leg
-    gains:
-      left_top_leg2bottom_leg: {p: 100.0, i: 0.1, d: 2.0}
-    constraints:
-      goal_time: 0.0
+    type: position_controllers/JointPositionController
+    joint: left_top_leg2bottom_leg
 
   # mobile_base_controller:
   #   type: my_controller/MyPositionController

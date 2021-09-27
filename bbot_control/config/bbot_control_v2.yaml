@@ -1,0 +1,86 @@
+bbot:
+  # Publish all joint states -----------------------------------
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 100  
+  
+  # Position Controllers ---------------------------------------    
+       
+  base2right_top_leg_position_controller:
+    type: effort_controllers/JointTrajectoryController
+    joints: 
+      - base2right_top_leg
+    gains:
+      base2right_top_leg: {p: 100.0, i: 0.1, d: 0.01} #10 0.1 0.01
+    constraints:
+      goal_time: 0.0
+
+  base2left_top_leg_position_controller:
+    type: effort_controllers/JointTrajectoryController
+    joints: 
+      - base2left_top_leg
+    gains:
+      base2left_top_leg: {p: 100.0, i: 0.1, d: 0.01}
+    constraints:
+      goal_time: 0.0
+  
+  right_top_leg2bottom_leg_position_controller:
+    type: effort_controllers/JointTrajectoryController
+    joints: 
+      - right_top_leg2bottom_leg
+    gains:
+      right_top_leg2bottom_leg: {p: 100.0, i: 0.1, d: 2.0} #10 0.1 0.01
+    constraints:
+      goal_time: 0.0
+
+  left_top_leg2bottom_leg_position_controller:
+    type: effort_controllers/JointTrajectoryController
+    joints: 
+      - left_top_leg2bottom_leg
+    gains:
+      left_top_leg2bottom_leg: {p: 100.0, i: 0.1, d: 2.0}
+    constraints:
+      goal_time: 0.0
+
+  mobile_base_controller:
+    type        : "diff_drive_controller/DiffDriveController"
+    left_wheel  : 'left_bottom_leg2wheel'
+    right_wheel : 'right_bottom_leg2wheel'
+    publish_rate: 50.0               # default: 50
+    pose_covariance_diagonal : [0.001, 0.001, 1000000.0, 1000000.0, 1000000.0, 1000.0]
+    twist_covariance_diagonal: [0.001, 0.001, 1000000.0, 1000000.0, 1000000.0, 1000.0]
+
+    # Wheel separation and diameter. These are both optional.
+    # diff_drive_controller will attempt to read either one or both from the
+    # URDF if not specified as a parameter
+    wheel_separation : 0.142
+    wheel_radius : 0.05
+
+    # Wheel separation and radius multipliers
+    wheel_separation_multiplier: 1.0 # default: 1.0
+    wheel_radius_multiplier    : 1.0 # default: 1.0
+
+    # Velocity commands timeout [s], default 0.5
+    cmd_vel_timeout: 0.25
+
+    # Base frame_id
+    base_frame_id: base_link #default: base_link
+
+    # Velocity and acceleration limits
+    # Whenever a min_* is unspecified, default to -max_*
+    linear:
+      x:
+        has_velocity_limits    : true #true
+        max_velocity           : 0.5  #0.3667 m/s
+        has_acceleration_limits: true #true
+        max_acceleration       : 8.0  #0.2 m/s^2
+        # has_jerk_limits        : true
+        # max_jerk               : 1.0  # m/s^3
+    angular:
+      z:
+        has_velocity_limits    : true
+        max_velocity           : 7.3303  # rad/s
+        has_acceleration_limits: true
+        max_acceleration       : 7  # rad/s^2
+        # has_jerk_limits        : true
+        # max_jerk               : 2.5  # rad/s^3

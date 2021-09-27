@@ -1,0 +1,14 @@
+<launch>
+    <!-- Config -->
+    <param name="robot_description" textfile="$(find bbot_description)/urdf/bbot.urdf.xacro" />  
+
+    <!-- Load the controllers -->
+    <param name="robot_description" textfile="$(find bbot_description)/urdf/bbot.urdf.xacro" /> 
+    <node name="bbot_node" pkg="bbot_bringup" type="bbot_control_node" ns="/bbot" output="screen"/>
+    <include file="$(find bbot_control)/launch/bbot_control.launch"/>
+
+    <!-- Load Lidar node -->
+    <!-- <include file="$(find hls_lfcd_lds_driver)/launch/hlds_laser.launch">
+        <param name="frame_id" value="lds"/>
+    </include> -->
+</launch>

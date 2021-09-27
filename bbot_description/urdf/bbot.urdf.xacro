@@ -218,7 +218,7 @@
     <joint name="base2right_top_leg" type="revolute">
       <parent link="main_base"/>
       <child link="right_top_leg"/>
-      <origin xyz="-0.055 0.021 0.0" rpy="0.656 0 0" /> <!-- Previous 0.656 0.3927 -->
+      <origin xyz="-0.055 0.021 0.0" rpy="0 0 0" /> <!-- Previous 0.656 0.3927 -->
       <axis xyz="1 0 0" />
       <limit velocity="6.5" effort="1000" lower="-3.14" upper="3.14" />
       <dynamics damping="0.1" friction="0.0" />
@@ -227,7 +227,7 @@
     <joint name="base2left_top_leg" type="revolute">
       <parent link="main_base"/>
       <child link="left_top_leg"/>
-      <origin xyz="0.101 0.021 0.0" rpy="0.656 0 0" />
+      <origin xyz="0.101 0.021 0.0" rpy="0 0 0" />
       <axis xyz="1 0 0" />
       <limit velocity="6.5" effort="1000" lower="-3.14" upper="3.14" />
       <dynamics damping="0.1" friction="0.0" />
@@ -236,7 +236,7 @@
     <joint name="right_top_leg2bottom_leg" type="revolute">
       <parent link="right_top_leg"/>
       <child link="right_bottom_leg"/>
-      <origin xyz="-0.0 0.0 -0.1105" rpy="-1.67 0 0" /> <!-- Previous -1.67 -0.9547-->
+      <origin xyz="-0.0 0.0 -0.1105" rpy="0 0 0" /> <!-- Previous -1.67 -0.9547-->
       <axis xyz="1 0 0" />
       <limit velocity="6.5" effort="1000" lower="-3.14" upper="3.14" />
       <dynamics damping="0.1" friction="0.0" />
@@ -245,7 +245,7 @@
     <joint name="left_top_leg2bottom_leg" type="revolute">
       <parent link="left_top_leg"/>
       <child link="left_bottom_leg"/>
-      <origin xyz="-0.0 0.0 -0.1105" rpy="-1.67 0 0" />
+      <origin xyz="-0.0 0.0 -0.1105" rpy="0 0 0" />
       <axis xyz="1 0 0" />
       <limit velocity="6.5" effort="1000" lower="-3.14" upper="3.14" />
       <dynamics damping="0.1" friction="0.0" />
@@ -291,10 +291,10 @@
   <transmission name="trans_base2right_top_leg">
       <type>transmission_interface/SimpleTransmission</type>
       <joint name="base2right_top_leg">
-          <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+          <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
       </joint>
       <actuator name="motor_base2right_top_leg">
-        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
         <mechanicalReduction>1</mechanicalReduction>
       </actuator>
   </transmission>
@@ -302,10 +302,10 @@
   <transmission name="trans_base2left_top_leg">
       <type>transmission_interface/SimpleTransmission</type>
       <joint name="base2left_top_leg">
-          <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+          <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
       </joint>
       <actuator name="motor_base2left_top_leg">
-        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
         <mechanicalReduction>1</mechanicalReduction>
       </actuator>
   </transmission>
@@ -313,10 +313,10 @@
   <transmission name="trans_right_top_leg2bottom_leg">
       <type>transmission_interface/SimpleTransmission</type>
       <joint name="right_top_leg2bottom_leg">
-          <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+          <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
       </joint>
       <actuator name="motor_right_top_leg2bottom_leg">
-        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
         <mechanicalReduction>1</mechanicalReduction>
       </actuator>
   </transmission>
@@ -324,10 +324,10 @@
   <transmission name="trans_left_top_leg2bottom_leg">
       <type>transmission_interface/SimpleTransmission</type>
       <joint name="left_top_leg2bottom_leg">
-          <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+          <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
       </joint>
       <actuator name="motor_left_top_leg2bottom_leg">
-        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
         <mechanicalReduction>1</mechanicalReduction>
       </actuator>
   </transmission>
