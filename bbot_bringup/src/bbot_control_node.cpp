@@ -74,8 +74,8 @@ public: //Methods
 		}
 		//Define the hardware interfaces for the leg joints
 		for(size_t i=2; i < 6; i++){
-			if(i%2==0) 	cmd[i] = 0.53; // Initial pose for a top leg
-			else 		cmd[i] = 1.38; // Initial pose for a bottom leg	
+			if(i%2==0) 	cmd[i] = 0.6545; //0.53; // Initial pose for a top leg
+			else 		cmd[i] = 1.665; //1.38; // Initial pose for a bottom leg	
 			pos[i] = 0;
 			vel[i] = 0;
 			eff[i] = 0;
@@ -134,7 +134,7 @@ public: //Methods
 
 		// Write wheels current
 		for(size_t i=0; i< 2; i++){
-			current = (int16_t) (1193*cmd[i]/3.21); //TODO () Convert torque to raw data for dynamixels current
+			current = (int16_t) (1193*0/3.21); //TODO () Convert torque to raw data for dynamixels current
 			dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_GOAL_CURRENT, current, &dxl_error);
 			if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to write current for Dynamixel ID %d", joint_IDs[i]);}
 		}

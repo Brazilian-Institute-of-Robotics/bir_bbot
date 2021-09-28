@@ -6,8 +6,8 @@ from IKSolve import IKSolve
 # lu_home = 52   # Left leg upper joint home position (servo_angle[2])
 # ll_home = 23   # Left leg lower joint home position (servo_angle[3])
  
-ik_handler = IKSolve(ru_home=10, rl_home=0,  # Pass home positions to IK class
-                     lu_home=350, ll_home=0) # Home position from CAD
+ik_handler = IKSolve(ru_home=0, rl_home=0,  # Pass home positions to IK class
+                     lu_home=0, ll_home=0) # Home position from CAD
 
 while True:
     x = float(input('x:'))

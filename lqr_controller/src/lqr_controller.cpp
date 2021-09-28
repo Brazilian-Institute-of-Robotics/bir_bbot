@@ -74,7 +74,7 @@ class LQRController : public controller_interface::Controller<hardware_interface
       x_vel_int_error += x_ref - robot_x_velocity;   // get integral of the error
       yaw_vel_int_error += yaw_ref - robot_yaw_velocity; // get integral of the error
 
-      std::vector<double> states = {robot_x_velocity, pitch_vel, yaw_vel, pitch_angle - 0.075, x_vel_int_error, -yaw_vel_int_error};
+      std::vector<double> states = {robot_x_velocity, pitch_vel, yaw_vel, pitch_angle - 0.16, x_vel_int_error, -yaw_vel_int_error};
 
       std_msgs::Float64MultiArray states_msg, inputs_msg;
       states_msg.data = states;
@@ -116,8 +116,8 @@ class LQRController : public controller_interface::Controller<hardware_interface
 
     // Pitch and roll are inverted due to simulation issues
     tf::Matrix3x3(quat_angle).getRPY(pitch_angle,roll_angle, yaw_angle);
-    pitch_vel = data->angular_velocity.x;
-    roll_vel = data->angular_velocity.y;
+    roll_vel = data->angular_velocity.x;
+    pitch_vel = -1*data->angular_velocity.y;
     yaw_vel = data->angular_velocity.z;
   }
 
@@ -132,6 +132,9 @@ class LQRController : public controller_interface::Controller<hardware_interface
   void stopping(const ros::Time& time) { 
       x_vel_int_error = 0.0;
       yaw_vel_int_error = 0.0;
+      left_wheel_joint_.setCommand(0.0);
+      right_wheel_joint_.setCommand(0.0);
+
   }
 
   private:
