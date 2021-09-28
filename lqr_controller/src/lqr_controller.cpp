@@ -74,7 +74,7 @@ class LQRController : public controller_interface::Controller<hardware_interface
       x_vel_int_error += x_ref - robot_x_velocity;   // get integral of the error
       yaw_vel_int_error += yaw_ref - robot_yaw_velocity; // get integral of the error
 
-      std::vector<double> states = {robot_x_velocity, pitch_vel, yaw_vel, pitch_angle - 0.075, x_vel_int_error, -yaw_vel_int_error};
+      std::vector<double> states = {robot_x_velocity, pitch_vel, yaw_vel, pitch_angle - 0.16, x_vel_int_error, -yaw_vel_int_error};
 
       std_msgs::Float64MultiArray states_msg, inputs_msg;
       states_msg.data = states;
