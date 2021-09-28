@@ -104,6 +104,7 @@ public: //Methods
 			
 			dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_OPERATION_MODE, 0, &dxl_error); // TurnON Current control Mode
 			if (dxl_comm_result != COMM_SUCCESS){ROS_ERROR("Failed to set Current control Mode for Dynamixel ID %d", joint_IDs[i]);}
+			
 			if (i == RIGHT_WHEEL){dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_DRIVE_MODE, 1, &dxl_error);} // Set Right wheel to reverse mode
 			
 			dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_TORQUE_ENABLE, 1, &dxl_error); //TurnON Torque
@@ -129,12 +130,12 @@ public: //Methods
 	}
 
 	void write(const ros::Time &time){
-		int32_t current, position;
+		int16_t current, position;
 
 		// Write wheels current
 		for(size_t i=0; i< 2; i++){
-			current = (int32_t) (1193*0.5/3); // (()) Convert torque to raw data for dynamixels current
-			dxl_comm_result = packetHandler->write4ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_GOAL_CURRENT, current, &dxl_error);
+			current = (int16_t) (1193*cmd[i]/3.21); //TODO () Convert torque to raw data for dynamixels current
+			dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_GOAL_CURRENT, current, &dxl_error);
 			if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to write current for Dynamixel ID %d", joint_IDs[i]);}
 		}
 
@@ -192,7 +193,7 @@ int main(int argc, char **argv) {
 	BbotHardware bbot_hardware(nh);
 	controller_manager::ControllerManager cm(&bbot_hardware, nh);
 
-	ros::Duration period(0.01); // 25Hz
+	ros::Duration period(0.04); // 25Hz
 	ros::Time last_time = ros::Time::now();
 
 	while (ros::ok()) {
