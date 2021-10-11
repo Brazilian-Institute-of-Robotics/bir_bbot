@@ -439,12 +439,12 @@
           </sensor>
     </gazebo>
     <!-- Optical frame -->
-      <!-- <link name="camera_optical_frame"/>
+      <link name="camera_optical_frame"/>
       <joint name="gazebo_optical_joint" type="fixed">
           <parent link="camera_frame_gazebo" />
           <child link="camera_optical_frame" />
           <origin xyz="0.0 0.0 0.0" rpy="-1.5708 0 -1.5708" />
-      </joint> -->
+      </joint>
   
   <!-- LiDAR -->
     <link name="lds_frame_gazebo"/>
