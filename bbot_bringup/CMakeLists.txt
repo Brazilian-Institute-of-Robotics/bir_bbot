@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   dynamixel_sdk
   roscpp
   rospy
+  dynamic_reconfigure
 )
 
 ## System dependencies are found with CMake's conventions
@@ -94,6 +95,13 @@ find_package(catkin REQUIRED COMPONENTS
 #   cfg/DynReconf1.cfg
 #   cfg/DynReconf2.cfg
 # )
+
+#add dynamic reconfigure api
+#find_package(catkin REQUIRED dynamic_reconfigure)
+generate_dynamic_reconfigure_options(
+  cfg/value_lqr.cfg
+  #...
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -210,3 +218,6 @@ target_link_libraries(bbot_control_node ${catkin_LIBRARIES})
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+# make sure configure headers are built before any node using them
+add_dependencies(bbot_control_node ${PROJECT_NAME}_gencfg)

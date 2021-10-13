@@ -5,6 +5,8 @@
 #include <hardware_interface/robot_hw.h>
 #include "controller_manager/controller_manager.h"
 #include "dynamixel_sdk/dynamixel_sdk.h"
+#include <dynamic_reconfigure/server.h>
+#include <bbot_bringup/LQR_VARConfig.h>
 
 // Control table addresses for Wheels (XM430-W210)
 #define WHEEL_ADDR_TORQUE_ENABLE    64
@@ -35,6 +37,8 @@
 
 dynamixel::PortHandler * portHandler;		//Manage communication with dynamixels via USB
 dynamixel::PacketHandler * packetHandler;	//Access dynamixels EEPROM and RAM for reading and writing
+
+double lqr_reconfigure = 0.0;
 
 /////////////////////////////////////////////////////////////////////
 //	BBOT HARDWARE INTERFACE
@@ -134,7 +138,7 @@ public: //Methods
 
 		// Write wheels current
 		for(size_t i=0; i< 2; i++){
-			current = (int16_t) (1193*0/3.21); //TODO () Convert torque to raw data for dynamixels current
+			current = lqr_reconfigure * cmd[i];//(int16_t) (1193*0/3.21); //TODO () Convert torque to raw data for dynamixels current
 			dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_GOAL_CURRENT, current, &dxl_error);
 			if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to write current for Dynamixel ID %d", joint_IDs[i]);}
 		}
@@ -177,12 +181,20 @@ public: //Methods
 		// ROS_INFO("READING:\n\tRIGHT_WHEEL_VEL: %f\n\tLEFT_WHEEL_VEL: %f", vel[RIGHT_WHEEL],vel[LEFT_WHEEL]);
 	 	// ROS_INFO("READING:\n\tRIGHT_WHEEL_POS: %f\n\tLEFT_WHEEL_POS: %f", pos[RIGHT_WHEEL],pos[LEFT_WHEEL]);
   	}
+
 };
+
+/////////////////////////////////////////////////////////////////////
+//	DYNAMIC RECONFIGURE SETUP
+/////////////////////////////////////////////////////////////////////
+void callback(const bbot_bringup::LQR_VARConfig &config, uint32_t level) {
+	ROS_INFO("Reconfigure Request: %f", config.lqr_variable);
+	lqr_reconfigure = config.lqr_variable;
+}
 
 /////////////////////////////////////////////////////////////////////
 //	MAIN CONTROL LOOP
 /////////////////////////////////////////////////////////////////////
-
 int main(int argc, char **argv) {
 	ros::init(argc, argv, "bbot_control");
 
@@ -195,6 +207,12 @@ int main(int argc, char **argv) {
 
 	ros::Duration period(0.04); // 25Hz
 	ros::Time last_time = ros::Time::now();
+
+	dynamic_reconfigure::Server<bbot_bringup::LQR_VARConfig> server;
+	dynamic_reconfigure::Server<bbot_bringup::LQR_VARConfig>::CallbackType f;
+
+	f = boost::bind(&callback, _1, _2);
+	server.setCallback(f);
 
 	while (ros::ok()) {
 		ros::Time time = ros::Time::now();
