@@ -138,7 +138,7 @@ public: //Methods
 
 		// Write wheels current
 		for(size_t i=0; i< 2; i++){
-			current = lqr_reconfigure * cmd[i];//(int16_t) (1193*0/3.21); //TODO () Convert torque to raw data for dynamixels current
+			current = (int16_t) (lqr_reconfigure * cmd[i])*(1193/3.21);//(int16_t) (1193*0/3.21); //TODO () Convert torque to raw data for dynamixels current
 			dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_GOAL_CURRENT, current, &dxl_error);
 			if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to write current for Dynamixel ID %d", joint_IDs[i]);}
 		}
