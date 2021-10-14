@@ -31,9 +31,11 @@ bbot:
     type: lqr_controller/LQRController
     left_wheel: left_bottom_leg2wheel
     right_wheel: right_bottom_leg2wheel
-    control_period: 0.04 # seconds = 25 Hz
+    control_period: -1 # seconds = 25 Hz
     wheel_separation: 0.1431  # meters
     wheel_radius: 0.05        # meters
+    balance_angle_offset: 0.16
+    imu_topic: /bbot/imu/data_filtered
     # The first and second line of the K gain matrix
     K_l1: [-0.392235716954536, -0.218590687200726, -0.0583777338946998,  -1.2520221323289, 0.00678020461160532,  0.0174870173580876]
     K_l2: [-0.392235716954667, -0.218590687200758,  0.0583777338946999, -1.25202213232924, 0.00678020461161163, -0.0174870173580875]
