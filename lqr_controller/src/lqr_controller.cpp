@@ -44,13 +44,21 @@ class LQRController : public controller_interface::Controller<hardware_interface
       ROS_ERROR("Could not find control_period");
       return false;
     }
+    if (!n.getParam("balance_angle_offset", balance_angle_offset)){
+      ROS_ERROR("Could not find balance_angle_offset");
+      return false;
+    }
+    if (!n.getParam("imu_topic", imu_topic)){
+      ROS_ERROR("Could not find imu_topic");
+      return false;
+    }
 
     // get the joint object to use in the realtime loop
     left_wheel_joint_ = hw->getHandle(left_wheel);  // throws on failure
     right_wheel_joint_ = hw->getHandle(right_wheel);  // throws on failure 
 
     // set ROS interface topics
-    imu_msgs_ = n.subscribe<sensor_msgs::Imu>("/bbot/imu", 1, &LQRController::imu_msgsCallback, this);
+    imu_msgs_ = n.subscribe<sensor_msgs::Imu>(imu_topic, 1, &LQRController::imu_msgsCallback, this);
     cmd_vel_ = n.subscribe<geometry_msgs::Twist>("cmd_vel", 1, &LQRController::cmd_velCallback, this);                    
     
     // set debug topics
@@ -74,7 +82,7 @@ class LQRController : public controller_interface::Controller<hardware_interface
       x_vel_int_error += x_ref - robot_x_velocity;   // get integral of the error
       yaw_vel_int_error += yaw_ref - robot_yaw_velocity; // get integral of the error
 
-      std::vector<double> states = {robot_x_velocity, pitch_vel, yaw_vel, pitch_angle - 0.16, x_vel_int_error, -yaw_vel_int_error};
+      std::vector<double> states = {robot_x_velocity, pitch_vel, yaw_vel, -pitch_angle - balance_angle_offset, x_vel_int_error, -yaw_vel_int_error};
 
       std_msgs::Float64MultiArray states_msg, inputs_msg;
       states_msg.data = states;
@@ -115,9 +123,9 @@ class LQRController : public controller_interface::Controller<hardware_interface
     tf::quaternionMsgToTF(data->orientation, quat_angle);
 
     // Pitch and roll are inverted due to simulation issues
-    tf::Matrix3x3(quat_angle).getRPY(pitch_angle,roll_angle, yaw_angle);
+    tf::Matrix3x3(quat_angle).getRPY(roll_angle,pitch_angle, yaw_angle);
     roll_vel = data->angular_velocity.x;
-    pitch_vel = -1*data->angular_velocity.y;
+    pitch_vel = -1*data->angular_velocity.y; //todo
     yaw_vel = data->angular_velocity.z;
   }
 
@@ -145,6 +153,8 @@ class LQRController : public controller_interface::Controller<hardware_interface
     double wheel_separation;
     double wheel_radius;
     double control_period;
+    double balance_angle_offset;
+    std::string imu_topic;
     std::vector<std::vector<double>> K_matrix = std::vector<std::vector<double>>(2,std::vector<double>(6, 0.0));
 
     double roll_angle = 0.0;
