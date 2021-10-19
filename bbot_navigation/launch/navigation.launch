@@ -1,0 +1,4 @@
+<launch>
+    <include file="$(find bbot_navigation)/launch/robot_localization.launch"/>
+    <include file="$(find bbot_navigation)/launch/gmapping.launch"/>
+</launch>

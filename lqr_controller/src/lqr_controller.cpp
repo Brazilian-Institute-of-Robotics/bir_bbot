@@ -5,6 +5,7 @@
 #include "sensor_msgs/Imu.h"
 #include "tf/transform_datatypes.h"
 #include "geometry_msgs/Twist.h"
+#include "geometry_msgs/TwistWithCovarianceStamped.h"
 #include "std_msgs/Float64MultiArray.h"
 
 namespace lqr_controller{
@@ -56,6 +57,9 @@ class LQRController : public controller_interface::Controller<hardware_interface
     // set debug topics
     bbot_states_pub_ = n.advertise<std_msgs::Float64MultiArray>("robot_states",1);
     bbot_inputs_pub_ = n.advertise<std_msgs::Float64MultiArray>("robot_inputs",1);
+    twist_pub_ = n.advertise<geometry_msgs::TwistWithCovarianceStamped>("twist",1);
+
+    twist_stamped.header.frame_id = "base_link";
 
     // get current time
     last_pub_time = ros::Time::now().toSec();
@@ -102,7 +106,14 @@ class LQRController : public controller_interface::Controller<hardware_interface
       left_wheel_joint_.setCommand(system_inputs[0]);
       right_wheel_joint_.setCommand(system_inputs[1]);
       bbot_inputs_pub_.publish(inputs_msg);
-      // ROS_INFO("Pub %f", time.toSec() - last_pub_time);
+      
+      // Publish twist with covariance for localization
+      twist_stamped.header.stamp = time;
+      twist_stamped.twist.twist.linear.x = robot_x_velocity;
+      twist_stamped.twist.twist.linear.y = 0.0;
+      twist_stamped.twist.twist.angular.z = yaw_vel;
+      twist_pub_.publish(twist_stamped);
+
       last_pub_time = time.toSec();
     }
   }
@@ -159,10 +170,13 @@ class LQRController : public controller_interface::Controller<hardware_interface
 
     double pitch_filtered = 0.0;
 
+    geometry_msgs::TwistWithCovarianceStamped twist_stamped;
+
     ros::Subscriber imu_msgs_;
     ros::Subscriber cmd_vel_;
     ros::Publisher bbot_states_pub_;
     ros::Publisher bbot_inputs_pub_;
+    ros::Publisher twist_pub_;
 
     // Get K matrix Pose C               
     // double K[2][6] = {{-0.351342726830498, -0.136414901229862, -0.0590995944246939, -1.08273414375471, 0.00177016409511773,  0.0186040640917086},
