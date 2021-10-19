@@ -8,18 +8,18 @@
   <!-- World -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg if="$(arg apriltag_world)" name="world_name" value="$(find bbot_gazebo)/world/bbot_apriltag.world"/>
-    <arg unless="$(arg apriltag_world)" name="world_name" value="$(find bbot_gazebo)/world/bbot.world"/>
+    <arg unless="$(arg apriltag_world)" name="world_name" value="$(find bbot_gazebo)/world/bbot_nav.world"/>
     <arg name="paused" value="true"/>
   </include>
   
   <!-- Spaw Bbot -->
-  <node name="spawn_bbot" pkg="gazebo_ros" type="spawn_model" args="-file $(find bbot_description)/urdf/bbot.urdf.xacro -urdf -y 1.0 -z 0.235 -Y -1.57 -model bbot"/>
+  <node name="spawn_bbot" pkg="gazebo_ros" type="spawn_model" args="-file $(find bbot_description)/urdf/bbot.urdf.xacro -urdf -x -4.0 -y -4.0 -z 0.235 -Y 1.57 -model bbot"/>
  
   <!-- Spaw Ramp -->
-  <node name="spawn_ramp" pkg="gazebo_ros" type="spawn_model" args="-file $(find bbot_description)/urdf/ramp.urdf.xacro -urdf -x 1.0 -y -1.0 -z 0.1 -model ramp"/>
+  <node name="spawn_ramp" pkg="gazebo_ros" type="spawn_model" args="-file $(find bbot_description)/urdf/ramp.urdf.xacro -urdf -x 3.856256 -y 1.5 -z 0.1 -Y -1.57 -model ramp"/>
 
   <!-- Spaw TAG -->
-  <node name="spawn_aruco" pkg="gazebo_ros" type="spawn_model" args="-file $(find bbot_description)/urdf/ar_tag.urdf.xacro -urdf -y -1.0 -z 0.25 -Y -1.57 -model ArucoTAG"/>
+  <node name="spawn_aruco" pkg="gazebo_ros" type="spawn_model" args="-file $(find bbot_description)/urdf/ar_tag.urdf.xacro -urdf -x -4.0 -y 0.5 -z 0.25 -Y 1.57 -model ArucoTAG"/>
 
   <!-- Control -->
   <include file="$(find bbot_control)/launch/bbot_control.launch"/>
