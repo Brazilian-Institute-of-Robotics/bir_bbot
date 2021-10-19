@@ -69,12 +69,11 @@ class LQRController : public controller_interface::Controller<hardware_interface
       double right_wheel_vel = right_wheel_joint_.getVelocity(); // rad/s
 
       double robot_x_velocity = wheel_radius/2*(left_wheel_vel + right_wheel_vel); // r/2(thetaL + thetaR)
-      double robot_yaw_velocity = wheel_radius/wheel_separation*(left_wheel_vel - right_wheel_vel); // r/d(thetaL - thetaR)
 
       x_vel_int_error += x_ref - robot_x_velocity;   // get integral of the error
-      yaw_vel_int_error += yaw_ref - robot_yaw_velocity; // get integral of the error
+      yaw_vel_int_error += yaw_ref - yaw_vel; // get integral of the error
 
-      std::vector<double> states = {robot_x_velocity, pitch_vel, yaw_vel, pitch_angle - 0.075, x_vel_int_error, -yaw_vel_int_error};
+      std::vector<double> states = {robot_x_velocity, pitch_vel, yaw_vel, pitch_angle - 0.075, x_vel_int_error, yaw_vel_int_error};
 
       std_msgs::Float64MultiArray states_msg, inputs_msg;
       states_msg.data = states;
