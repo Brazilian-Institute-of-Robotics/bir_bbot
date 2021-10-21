@@ -73,6 +73,7 @@ class LQRController : public controller_interface::Controller<hardware_interface
       double right_wheel_vel = right_wheel_joint_.getVelocity(); // rad/s
 
       double robot_x_velocity = wheel_radius/2*(left_wheel_vel + right_wheel_vel); // r/2(thetaL + thetaR)
+      double robot_yaw_velocity = wheel_radius/wheel_separation*(right_wheel_vel - left_wheel_vel); // r/d(thetaL - thetaR)
 
       x_vel_int_error += x_ref - robot_x_velocity;   // get integral of the error
       yaw_vel_int_error += yaw_ref - yaw_vel; // get integral of the error
@@ -111,7 +112,7 @@ class LQRController : public controller_interface::Controller<hardware_interface
       twist_stamped.header.stamp = time;
       twist_stamped.twist.twist.linear.x = robot_x_velocity;
       twist_stamped.twist.twist.linear.y = 0.0;
-      twist_stamped.twist.twist.angular.z = yaw_vel;
+      twist_stamped.twist.twist.angular.z = robot_yaw_velocity;
       twist_pub_.publish(twist_stamped);
 
       last_pub_time = time.toSec();
