@@ -4,7 +4,7 @@ world_frame: odom
 
 two_d_mode: true
 
-frequency: 50
+frequency: 30
 
 twist0: bbot/mobile_base_controller/twist
 twist0_config: [false, false, false,

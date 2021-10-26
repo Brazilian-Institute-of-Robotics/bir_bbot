@@ -1,0 +1,13 @@
+global_frame: map
+static_map: true
+rolling_window: false
+track_unknown_space: true
+width: 10
+height: 10
+resolution: 0.01
+origin_x: 0.0
+origin_y: 0.0
+
+plugins:
+  - {name: static_layer,              type: "costmap_2d::StaticLayer"}
+  - {name: inflation_layer,           type: "costmap_2d::InflationLayer"}

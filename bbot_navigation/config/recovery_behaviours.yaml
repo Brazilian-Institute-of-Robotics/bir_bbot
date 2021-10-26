@@ -1,0 +1,41 @@
+recovery_behaviour_enabled: true
+
+recovery_behaviors:
+  - name: 'moveback_recovery'
+    type: 'moveback_recovery/MoveBackRecovery'
+  # - name: 'conservative_reset'
+  #   type: 'clear_costmap_recovery/ClearCostmapRecovery'
+  # - name: 'aggressive_reset'
+  #   type: 'clear_costmap_recovery/ClearCostmapRecovery'
+  # - name: 'rotate_recovery'
+  #   type: 'rotate_recovery/RotateRecovery'
+  # - name: 'move_slow_and_clear'
+  #   type: 'move_slow_and_clear/MoveSlowAndClear'
+
+# conservative_reset:
+#   layer_names: ["obstacle_layer"]
+#   reset_distance: 2.0
+
+# aggressive_reset:
+#   layer_names: ["obstacle_layer"]
+#   reset_distance: 0.0
+
+# rotate_recovery:
+#   frequency: 20.0
+#   sim_granularity: 0.017
+
+# move_slow_and_clear:
+#   clearing_distance: 0.5
+#   limited_trans_speed: 0.25
+#   limited_rot_speed: 0.45
+#   limited_distance: 0.3
+
+moveback_recovery:
+  controller_frequency: 20.0
+  linear_vel_back     : -0.03
+  step_back_length    : 0.3
+  step_back_timeout   : 30.0
+
+
+#max_planning_retries: 2  # To enable recovery behavior, set to positive value.
+#clearing_radius: 0.30

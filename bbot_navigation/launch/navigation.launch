@@ -1,4 +1,5 @@
 <launch>
     <include file="$(find bbot_navigation)/launch/robot_localization.launch"/>
     <include file="$(find bbot_navigation)/launch/gmapping.launch"/>
+    <!-- <include file="$(find bbot_navigation)/launch/move_base_flex.launch"/> -->
 </launch>
