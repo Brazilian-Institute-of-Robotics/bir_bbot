@@ -45,6 +45,10 @@ class LQRController : public controller_interface::Controller<hardware_interface
       ROS_ERROR("Could not find control_period");
       return false;
     }
+    if (!n.getParam("cmd_vel_timeout", cmd_vel_timeout)){
+      ROS_ERROR("Could not find cmd_vel_timeout");
+      return false;
+    }
 
     // get the joint object to use in the realtime loop
     left_wheel_joint_ = hw->getHandle(left_wheel);  // throws on failure
@@ -62,13 +66,14 @@ class LQRController : public controller_interface::Controller<hardware_interface
     twist_stamped.header.frame_id = "base_link";
 
     // get current time
-    last_pub_time = ros::Time::now().toSec();
+    last_control_time = ros::Time::now().toSec();
+    last_cmd_vel_time = ros::Time::now().toSec();
     return true;
   }
 
   void update(const ros::Time& time, const ros::Duration& period) //Simulation period = 0.001 and Time is incremented by 0.001
   {
-    if(time.toSec() - last_pub_time >= control_period){ //Keep commands at 25 Hz 
+    if(time.toSec() - last_control_time >= control_period){ //Keep commands at defined  freq (Hz)  
       double left_wheel_vel = left_wheel_joint_.getVelocity(); // rad/s
       double right_wheel_vel = right_wheel_joint_.getVelocity(); // rad/s
 
@@ -115,7 +120,11 @@ class LQRController : public controller_interface::Controller<hardware_interface
       twist_stamped.twist.twist.angular.z = robot_yaw_velocity;
       twist_pub_.publish(twist_stamped);
 
-      last_pub_time = time.toSec();
+      last_control_time = time.toSec();
+    }
+    if(time.toSec() - last_cmd_vel_time > cmd_vel_timeout){ // Stop robot in case no cmd_vel msgs are received
+      x_ref = 0.0;
+      yaw_ref = 0.0;
     }
   }
 
@@ -136,6 +145,7 @@ class LQRController : public controller_interface::Controller<hardware_interface
   void cmd_velCallback(const geometry_msgs::TwistConstPtr& data){
     x_ref = data->linear.x;
     yaw_ref = data->angular.z;
+    last_cmd_vel_time = ros::Time::now().toSec();
   }
 
   void starting(const ros::Time& time) { }
@@ -149,7 +159,8 @@ class LQRController : public controller_interface::Controller<hardware_interface
     hardware_interface::JointHandle left_wheel_joint_;
     hardware_interface::JointHandle right_wheel_joint_;
 
-    double last_pub_time;
+    double last_control_time;
+    double last_cmd_vel_time;
     double wheel_separation;
     double wheel_radius;
     double control_period;
@@ -172,6 +183,7 @@ class LQRController : public controller_interface::Controller<hardware_interface
     double pitch_filtered = 0.0;
 
     geometry_msgs::TwistWithCovarianceStamped twist_stamped;
+    double cmd_vel_timeout = 0.5;
 
     ros::Subscriber imu_msgs_;
     ros::Subscriber cmd_vel_;

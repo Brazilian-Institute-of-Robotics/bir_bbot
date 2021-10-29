@@ -27,8 +27,9 @@ obstacles_layer:
     clearing: true, 
     marking: true, 
     topic: /bbot/laser/scan,
-    observation_persistence: 0.0}   
+    observation_persistence: 0.0,
+    inf_is_valid: true}   
 
 inflation_layer:
-    inflation_radius: 0.2
-    cost_scaling_factor: 15 #TODO testar diminuir
+    inflation_radius: 0.3
+    cost_scaling_factor: 3 #TODO testar diminuir

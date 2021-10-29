@@ -1,5 +1,5 @@
 global_frame: map
-static_map: true
+# static_map: true
 rolling_window: false
 track_unknown_space: true
 width: 10
