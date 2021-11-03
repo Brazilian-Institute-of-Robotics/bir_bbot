@@ -5,6 +5,7 @@
 ##############################################################################
 
 import functools
+from os import execv
 import tf
 from tf.transformations import quaternion_from_euler
 import py_trees
@@ -86,7 +87,39 @@ class CheckMarkerPosition(py_trees.behaviour.Behaviour):
             return py_trees.Status.SUCCESS
         else:
             return py_trees.Status.RUNNING
+ 
+class GoBackHome(py_trees.behaviour.Behaviour):
+    def __init__(self, name, xy, yaw):
+        self.BB = py_trees.blackboard.Blackboard()
+        self.tf_listener = tf.TransformListener()
+        self.tolerance = rospy.get_param("/move_base_flex/DWAPlannerROS/xy_goal_tolerance", default=0.15)
         
+        self.home_pose = geometry_msgs.PoseStamped()
+        self.home_pose.header.frame_id = "map"
+        self.home_pose.pose.position.x = xy[0]
+        self.home_pose.pose.position.y = xy[1]
+        rot2quaternion = quaternion_from_euler(0,0,yaw)       
+        self.home_pose.pose.orientation.x = rot2quaternion[0]
+        self.home_pose.pose.orientation.y = rot2quaternion[1]
+        self.home_pose.pose.orientation.z = rot2quaternion[2]
+        self.home_pose.pose.orientation.w = rot2quaternion[3]
+        
+        super(GoBackHome, self).__init__(name)       
+        
+    def initialise(self):
+        self.home_pose.header.stamp = rospy.Time.now()
+    
+    def update(self):
+        try:
+            (trans,rot) = self.tf_listener.lookupTransform("/map", "/base_footprint", rospy.Time(0))
+            trans_diff =  ((self.home_pose.pose.position.x - trans[0])**2 + (self.home_pose.pose.position.y - trans[1])**2)**0.5
+            if trans_diff > self.tolerance:
+                self.BB.set("target_pose",self.home_pose)
+                self.BB.set("pose_buffer",self.home_pose)
+            return py_trees.Status.SUCCESS
+        
+        except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+            return py_trees.Status.RUNNING
 ##############################################################################
 # Actions
 ##############################################################################
@@ -254,6 +287,8 @@ def create_root():
     )
     
     marker2bb = MarkerListener("Aruco2BB","/map","/aruco_id_0",(2,1),1.57)
+    
+    back_home = GoBackHome("GoHome",(-3.0,-2.8),1.57)
 
     clr_goal3 = py_trees.blackboard.ClearBlackboardVariable(name="ClearGoal", variable_name="target_pose")
     clr_buffer3 = py_trees.blackboard.ClearBlackboardVariable(name="ClearGoalBuffer", variable_name="pose_buffer")
@@ -266,7 +301,7 @@ def create_root():
     get_goal.add_children([have_goal, apply_buffer, new_goal])
     # get_buffer.add_children([apply_buffer,new_goal])
     apply_buffer.add_children([have_buffer,set_buffer])
-    navigate.add_children([GetPath_seq, exe_path, clr_goal1,clr_buffer])
+    navigate.add_children([GetPath_seq, exe_path, clr_goal1,clr_buffer,back_home])
     GetPath_seq.add_children([get_path,check_getpath_result])
     fallback.add_children([navigate, recovery,clr_goal2])
     
