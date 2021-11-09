@@ -15,6 +15,7 @@
 // #define WHEEL_ADDR_PRESENT_POSITION 132
 #define WHEEL_ADDR_PRESENT_VELOCITY 128
 #define WHEEL_ADDR_DRIVE_MODE 		10
+#define WHEEL_BAUDRATE_MEM 8
 
 // Control table addresses for Legs (MX-106)
 #define LEG_ADDR_TORQUE_ENABLE   	64
@@ -25,6 +26,7 @@
 #define LEG_ADDR_POSITION_KP 		84
 #define LEG_ADDR_POSITION_KI 		82
 #define LEG_ADDR_POSITION_KD 		80
+#define LEG_BAUDRATE_MEM 4
 
 // Protocol version
 #define PROTOCOL_VERSION      		2.0             	// Default Protocol version of DYNAMIXEL X series.
@@ -32,7 +34,7 @@
 // Default setting
 #define RIGHT_WHEEL_ID              12               	// RIGHT_WHEEL
 #define LEFT_WHEEL_ID               22               	// LEFT_WHEEL
-#define BAUDRATE              		1000000          	// 1Mbps
+#define BAUDRATE              		4500000          	// 1Mbps
 #define DEVICE_NAME           		"/dev/ttyUSB0" 		// Port for communication with dynamixels
 
 dynamixel::PortHandler * portHandler;		//Manage communication with dynamixels via USB
@@ -108,6 +110,9 @@ public: //Methods
 			
 			dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_OPERATION_MODE, 0, &dxl_error); // TurnON Current control Mode
 			if (dxl_comm_result != COMM_SUCCESS){ROS_ERROR("Failed to set Current control Mode for Dynamixel ID %d", joint_IDs[i]);}
+
+			// dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, joint_IDs[i], WHEEL_BAUDRATE_MEM, 4, &dxl_error); // TurnON Current control Mode
+			// if (dxl_comm_result != COMM_SUCCESS){ROS_ERROR("Failed to set Current control Mode for Dynamixel ID %d", joint_IDs[i]);}
 			
 			if (i == RIGHT_WHEEL){dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_DRIVE_MODE, 1, &dxl_error);} // Set Right wheel to reverse mode
 			
@@ -121,6 +126,9 @@ public: //Methods
 			
 			dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, joint_IDs[i], LEG_ADDR_OPERATION_MODE, 3, &dxl_error); // TurnON Velocity control Mode
 			if (dxl_comm_result != COMM_SUCCESS){ROS_ERROR("Failed to set Position control Mode for Dynamixel ID %d", joint_IDs[i]);}
+
+			// dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, joint_IDs[i], LEG_BAUDRATE_MEM, 0, &dxl_error); // Set position Kp
+			// if (dxl_comm_result != COMM_SUCCESS){ROS_ERROR("Failed to set Pos KP for Dynamixel ID %d", joint_IDs[i]);}
 			
 			dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, joint_IDs[i], LEG_ADDR_POSITION_KP, 300, &dxl_error); // Set position Kp
 			if (dxl_comm_result != COMM_SUCCESS){ROS_ERROR("Failed to set Pos KP for Dynamixel ID %d", joint_IDs[i]);}
@@ -138,9 +146,10 @@ public: //Methods
 
 		// Write wheels current
 		for(size_t i=0; i< 2; i++){
-			current = (int16_t) (lqr_reconfigure * cmd[i])*(1193/3.21);//(int16_t) (1193*0/3.21); //TODO () Convert torque to raw data for dynamixels current
+			current = (int16_t) std::round(lqr_reconfigure*cmd[i]);//0.18664559*cmd[i]*cmd[i] + 0.56186346*cmd[i] --(int16_t) (1193*0/3.21); //TODO () Convert torque to raw data for dynamixels current
+			ROS_INFO("lqr_reconfigure: %f cmd:  %f value: %f int: %d", lqr_reconfigure, cmd[i], lqr_reconfigure*cmd[i], current);
 			dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_GOAL_CURRENT, current, &dxl_error);
-			if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to write current for Dynamixel ID %d", joint_IDs[i]);}
+			// if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to write current for Dynamixel ID %d", joint_IDs[i]);}
 		}
 
 		// Write legs angular position
@@ -151,7 +160,7 @@ public: //Methods
 				position = (int32_t) (4095-cmd[i]/1.57*1024); //Convert angular pos to raw data for BOTTOM dynamixels
 			
 			dxl_comm_result = packetHandler->write4ByteTxRx(portHandler, joint_IDs[i], LEG_ADDR_GOAL_POSITION, position, &dxl_error);
-			if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to write position for Dynamixel ID %d", joint_IDs[i]);}
+			// if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to write position for Dynamixel ID %d", joint_IDs[i]);}
 		}
 	}
 
@@ -163,13 +172,13 @@ public: //Methods
 			if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to read velocity for Dynamixel ID %d", joint_IDs[i]);}
 			// dxl_comm_result = packetHandler->read4ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_PRESENT_POSITION, (uint32_t *)&dxl_pos, &dxl_error);
 			// if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to read position for Dynamixel ID %d", joint_IDs[i]);}
-			vel[i] = (double) (dxl_vel); 	//Convert raw data to N.m
+			vel[i] = (double) (dxl_vel)/0.229*(3.14159/30); 	//Convert raw data to N.m
 			// pos[i] = (double) dxl_pos*0.00153398;		//Convert raw data to rad
 		}
 		// Read leg states
 		for(size_t i=2; i< 6; i++){
 			dxl_comm_result = packetHandler->read4ByteTxRx(portHandler, joint_IDs[i], LEG_ADDR_PRESENT_POSITION, (uint32_t *)&dxl_pos, &dxl_error);
-			if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to read position for Dynamixel ID %d", joint_IDs[i]);}
+			// if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to read position for Dynamixel ID %d", joint_IDs[i]);}
 			if(joint_IDs[i]%2==0) 
 				pos[i] = (double) ((dxl_pos-2048)*1.17/762); 	//Convert angular pos to raw data for TOP dynamixels
 			else
@@ -197,6 +206,7 @@ void callback(const bbot_bringup::LQR_VARConfig &config, uint32_t level) {
 /////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv) {
 	ros::init(argc, argv, "bbot_control");
+	uint8_t dxl_error = 0;
 
 	ros::AsyncSpinner spinner(1);
 	spinner.start();
@@ -205,7 +215,8 @@ int main(int argc, char **argv) {
 	BbotHardware bbot_hardware(nh);
 	controller_manager::ControllerManager cm(&bbot_hardware, nh);
 
-	ros::Duration period(0.04); // 25Hz
+	// ros::Duration period(0.04); // 25Hz
+	ros::Rate loop_rate(25);
 	ros::Time last_time = ros::Time::now();
 
 	dynamic_reconfigure::Server<bbot_bringup::LQR_VARConfig> server;
@@ -218,12 +229,20 @@ int main(int argc, char **argv) {
 		ros::Time time = ros::Time::now();
 
 		bbot_hardware.read(time);
+		ros::Duration duration3 = ros::Time::now() - time;
+		ROS_INFO("TimesSleep: %f", duration3.toSec());
 		cm.update(ros::Time::now(), time - last_time);
 		bbot_hardware.write(time);
-
-		period.sleep();
+		ros::Duration duration4 = ros::Time::now() - time;
+		ROS_INFO("TimesSleep: %f", duration4.toSec());
+		// period.sleep();
+		loop_rate.sleep();
+		ros::Duration duration2 = ros::Time::now() - time;
+		ROS_INFO("TimesSleep: %f", duration2.toSec());
 		last_time = time;
 	}
+	packetHandler->write1ByteTxRx(portHandler, 12, WHEEL_ADDR_TORQUE_ENABLE, 0, &dxl_error); //TurnOFF Torque in order to acces the EEPROM area
+	packetHandler->write1ByteTxRx(portHandler, 22, WHEEL_ADDR_TORQUE_ENABLE, 0, &dxl_error); //TurnOFF Torque in order to acces the EEPROM area
 
 	return 0;
 }

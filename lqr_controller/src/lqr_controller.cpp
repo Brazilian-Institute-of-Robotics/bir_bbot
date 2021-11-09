@@ -78,9 +78,22 @@ class LQRController : public controller_interface::Controller<hardware_interface
 
       double robot_x_velocity = wheel_radius/2*(left_wheel_vel + right_wheel_vel); // r/2(thetaL + thetaR)
       double robot_yaw_velocity = wheel_radius/wheel_separation*(left_wheel_vel - right_wheel_vel); // r/d(thetaL - thetaR)
+      double windup_limit = 30.0;
+      double input_limit = 2.0;
 
       x_vel_int_error += x_ref - robot_x_velocity;   // get integral of the error
       yaw_vel_int_error += yaw_ref - robot_yaw_velocity; // get integral of the error
+
+      //Apply anti wind-up
+      if(x_vel_int_error > windup_limit)
+        x_vel_int_error = windup_limit;
+      else if(x_vel_int_error < -windup_limit)
+        x_vel_int_error = -windup_limit;
+
+      if(yaw_vel_int_error > windup_limit)
+        yaw_vel_int_error = windup_limit;
+      else if(yaw_vel_int_error < -windup_limit)
+        yaw_vel_int_error = -windup_limit;
 
       std::vector<double> states = {robot_x_velocity, pitch_vel, yaw_vel, -pitch_angle - balance_angle_offset, x_vel_int_error, -yaw_vel_int_error};
 
@@ -91,17 +104,17 @@ class LQRController : public controller_interface::Controller<hardware_interface
       // Perform matrix multiplication
       std::vector<double> system_inputs = {0.0, 0.0};
       for(int i=0;i<2;i++){
-        for(int j=0;j<6;j++){
+        for(int j=0;j<4;j++){ //TODO WITHOUT INTEGRAL ACTION
           system_inputs[i] += K_matrix[i][j]*states[j];
         }
       }
 
       //Apply Saturation to the inputs
       // for(int i=0;i<2;i++){
-      //   if(system_inputs[i] > 2)
-      //     system_inputs[i] = 0.5;
-      //   else if(system_inputs[i] < -0.5)
-      //     system_inputs[i] = -0.5;
+      //   if(system_inputs[i] > input_limit)
+      //     system_inputs[i] = input_limit;
+      //   else if(system_inputs[i] < -input_limit)
+      //     system_inputs[i] = -input_limit;
       // }
       
       system_inputs[0] *= -1;
