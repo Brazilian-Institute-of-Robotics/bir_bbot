@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   pluginlib
   roscpp
   std_msgs
+  Eigen3
 )
 
 ## System dependencies are found with CMake's conventions
@@ -117,6 +118,7 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
+include_directories(${EIGEN3_INCLUDE_DIR})
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}

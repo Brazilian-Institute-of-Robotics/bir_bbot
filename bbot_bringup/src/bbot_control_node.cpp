@@ -262,24 +262,24 @@ int main(int argc, char **argv) {
 		ros::Time time = ros::Time::now();
 		bbot_hardware.read(time); // 0.009152 seg
 		dur = ros::Time::now() - time;
-		ROS_INFO("READ: %f", dur.toSec());
+		// ROS_INFO("READ: %f", dur.toSec());
 		
 		tim = ros::Time::now();
 		cm.update(ros::Time::now(), time - last_time); // 0.000124 seg
 		dur = ros::Time::now() - tim;
-		ROS_INFO("UPDATE: %f", dur.toSec());
+		// ROS_INFO("UPDATE: %f", dur.toSec());
 
 		// ros::Time time2 = ros::Time::now();
-		while(ros::Time::now().toSec() - time2.toSec() < 0.01){
+		while(ros::Time::now().toSec() - time2.toSec() < 0.0125){
 			continue;
 		}
 		// ros::Duration duration4 = ros::Time::now() - time2;
-		ROS_INFO("TimesSleep: %f", ros::Time::now().toSec() - time2.toSec());
+		// ROS_INFO("TimesSleep: %f", ros::Time::now().toSec() - time2.toSec());
 		time2 = ros::Time::now();
 		// bbot_hardware.read(time); // 0.009152 seg
 		bbot_hardware.write(time); // 0.008461 seg
 		dur = ros::Time::now() - time2;
-		ROS_INFO("WRITE: %f", dur.toSec());
+		// ROS_INFO("WRITE: %f", dur.toSec());
 
 		// loop_rate.sleep();
 		// ros::Duration duration4 = ros::Time::now() - time;

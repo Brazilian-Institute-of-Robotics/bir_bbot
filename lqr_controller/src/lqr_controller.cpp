@@ -1,4 +1,5 @@
 #include "ros/ros.h"
+#include <Eigen/Dense>
 #include <controller_interface/controller.h>
 #include <hardware_interface/joint_command_interface.h>
 #include <pluginlib/class_list_macros.h>
@@ -11,6 +12,11 @@ namespace lqr_controller{
 
 class LQRController : public controller_interface::Controller<hardware_interface::EffortJointInterface>
 {
+  // public:
+  //   LQRController():Klqr(2,6), current_states(6,1), system_inputs(2,1){}
+  // Eigen::Matrix<double, 2, 6> Klqr;
+  // Eigen::Matrix<double, 6, 1> current_states;
+  // Eigen::Matrix<double, 2, 1> system_inputs;
 
   bool init(hardware_interface::EffortJointInterface* hw, ros::NodeHandle &n)
   {
@@ -32,14 +38,18 @@ class LQRController : public controller_interface::Controller<hardware_interface
       ROS_ERROR("Could not find wheel_radius");
       return false;
     }
-    if (!n.getParam("K_l1", K_matrix[0])){
-      ROS_ERROR("Could not find first line of the K gain matrix");
-      return false;
-    }
-    if (!n.getParam("K_l2", K_matrix[1])){
-      ROS_ERROR("Could not find second line of the K gain matrix");
-      return false;
-    }
+    
+    Klqr.row(0) << -0.961008304510787, -0.476939988582031, -0.370035227287944, -2.25496217761648;
+    Klqr.row(1) << -0.961008304535923, -0.476939988585445,  0.370035227287944, -2.25496217765837;
+
+    // if (!n.getParam("K_l1", K_matrix[0])){
+    //   ROS_ERROR("Could not find first line of the K gain matrix");
+    //   return false;
+    // }
+    // if (!n.getParam("K_l2", K_matrix[1])){
+    //   ROS_ERROR("Could not find second line of the K gain matrix");
+    //   return false;
+    // }
     if (!n.getParam("control_period", control_period)){
       ROS_ERROR("Could not find control_period");
       return false;
@@ -82,7 +92,7 @@ class LQRController : public controller_interface::Controller<hardware_interface
       double input_limit = 1.0;
 
       x_vel_int_error += x_ref - robot_x_velocity;   // get integral of the error
-      yaw_vel_int_error += yaw_ref - robot_yaw_velocity; // get integral of the error
+      yaw_vel_int_error += yaw_ref - yaw_vel; // get integral of the error
 
       //Apply anti wind-up
       if(x_vel_int_error > windup_limit)
@@ -95,19 +105,22 @@ class LQRController : public controller_interface::Controller<hardware_interface
       else if(yaw_vel_int_error < -windup_limit)
         yaw_vel_int_error = -windup_limit;
 
-      std::vector<double> states = {robot_x_velocity, pitch_vel, yaw_vel, -pitch_angle - balance_angle_offset, x_vel_int_error, yaw_vel_int_error};
+      current_states.col(0) << robot_x_velocity, pitch_vel, yaw_vel, -pitch_angle - balance_angle_offset;// x_vel_int_error, yaw_vel_int_error;
 
       std_msgs::Float64MultiArray states_msg, inputs_msg;
+      std::vector<double> states = {robot_x_velocity, pitch_vel, yaw_vel, -pitch_angle - balance_angle_offset, x_vel_int_error, yaw_vel_int_error};
       states_msg.data = states;
       bbot_states_pub_.publish(states_msg);
 
       // Perform matrix multiplication
-      std::vector<double> system_inputs = {0.0, 0.0};
-      for(int i=0;i<2;i++){
-        for(int j=0;j<4;j++){ //TODO WITHOUT INTEGRAL ACTION
-          system_inputs[i] += K_matrix[i][j]*states[j];
-        }
-      }
+      system_inputs << -Klqr*current_states;
+
+      // std::vector<double> system_inputs = {0.0, 0.0};
+      // for(int i=0;i<2;i++){
+      //   for(int j=0;j<6;j++){ //TODO WITHOUT INTEGRAL ACTION
+      //     system_inputs[i] += Klqr.coeff(i,j)*current_states.coeff(j,0);
+      //   }
+      // }
 
       // Apply Saturation to the inputs
       // for(int i=0;i<2;i++){
@@ -116,13 +129,11 @@ class LQRController : public controller_interface::Controller<hardware_interface
       //   else if(system_inputs[i] < -input_limit)
       //     system_inputs[i] = -input_limit;
       // }
-      
-      system_inputs[0] *= -1;
-      system_inputs[1] *= -1;
-      inputs_msg.data = system_inputs;
 
-      left_wheel_joint_.setCommand(system_inputs[0]);
-      right_wheel_joint_.setCommand(system_inputs[1]);
+      left_wheel_joint_.setCommand(system_inputs.coeff(0,0));
+      right_wheel_joint_.setCommand(system_inputs.coeff(1,0));
+      std::vector<double> pub_inputs = {system_inputs.coeff(0,0), system_inputs.coeff(1,0)};
+      inputs_msg.data = pub_inputs;
       bbot_inputs_pub_.publish(inputs_msg);
       // ROS_INFO("Pub %f", time.toSec() - last_pub_time);
       last_pub_time = time.toSec();
@@ -168,7 +179,11 @@ class LQRController : public controller_interface::Controller<hardware_interface
     double control_period;
     double balance_angle_offset;
     std::string imu_topic;
-    std::vector<std::vector<double>> K_matrix = std::vector<std::vector<double>>(2,std::vector<double>(6, 0.0));
+
+    Eigen::Matrix<double, 2, 4> Klqr;
+    Eigen::Matrix<double, 4, 1> current_states;
+    Eigen::Matrix<double, 2, 1> system_inputs;
+    // std::vector<std::vector<double>> K_matrix = std::vector<std::vector<double>>(2,std::vector<double>(6, 0.0));
 
     double roll_angle = 0.0;
     double pitch_angle = 0.0;
