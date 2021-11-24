@@ -39,18 +39,17 @@ class LQRController : public controller_interface::Controller<hardware_interface
       return false;
     }
     // Set LQR Matrices
-    Klqr.row(0) <<  -90.284296787656, -23.8398155098539, -1.98682106184264e-6, -212.177410401401, 0.0937282503373316, 0.0937021344383805;
-    Klqr.row(1) << -90.2842967876559, -23.8398155098539,  1.98682105994114e-6,   -212.1774104014, 0.0937021344383805, 0.0937282503373315;
-
+    Klqr.row(0) <<  -662.224947506569, -181.891378224247, -43.3637526093121, -1460.60630987986,  0.257625835152467, 0.0609893238064036;
+    Klqr.row(1) <<  -662.224947506569, -181.891378224247,   43.363752609312, -1460.60630987986, 0.0609893238064036,  0.257625835152467;
     system_inputs.col(0) << 0.0, 0.0;
 
     //Set KALMAN FILTER Matrices
-    Amodelo.row(0) << 9.16290516e-01,  3.75189470e-03,  0.00000000e+00, -6.76620370e-02,  4.14989765e-04,  4.14989765e-04,
-    Amodelo.row(1) << 6.51498644e-01,  9.74185042e-01,  0.00000000e+00, 1.06890914e+00, -3.22980453e-03, -3.22980453e-03,
-    Amodelo.row(2) << 0.00000000e+00,  0.00000000e+00,  9.48756646e-01, 0.00000000e+00, -3.55050913e-03,  3.55050913e-03,
-    Amodelo.row(3) << 4.15071057e-03,  1.23208015e-02,  0.00000000e+00, 1.00675997e+00, -2.05771477e-05, -2.05771477e-05,
-    Amodelo.row(4) << 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, 0.00000000e+00,  6.29600000e-01,  0.00000000e+00,
-    Amodelo.row(5) << 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, 0.00000000e+00,  0.00000000e+00,  6.29600000e-01;
+    Amodelo.row(0) << 9.16290516e-01,  3.75189470e-03,  0.00000000e+00, -6.76620370e-02,  5.53989362e-05,  5.53989362e-05;
+    Amodelo.row(1) << 6.51498644e-01,  9.74185042e-01,  0.00000000e+00, 1.06890914e+00, -4.31161802e-04, -4.31161802e-04;
+    Amodelo.row(2) << 0.00000000e+00,  0.00000000e+00,  9.48756646e-01, 0.00000000e+00, -4.73974169e-04,  4.73974169e-04;
+    Amodelo.row(3) << 4.15071057e-03,  1.23208015e-02,  0.00000000e+00, 1.00675997e+00, -2.74694026e-06, -2.74694026e-06;
+    Amodelo.row(4) << 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, 0.00000000e+00,  8.44400000e-01,  0.00000000e+00;
+    Amodelo.row(5) << 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, 0.00000000e+00,  0.00000000e+00,  8.44400000e-01;
 
     Bmodelo.col(0) << 0.0, 0.0, 0.0, 0.0, 1.0, 0.0;
     Bmodelo.col(1) << 0.0, 0.0, 0.0, 0.0, 0.0, 1.0;
@@ -60,27 +59,27 @@ class LQRController : public controller_interface::Controller<hardware_interface
     Cmodelo.row(2) << 0.0, 0.0, 1.0, 0.0, 0.0, 0.0;
     Cmodelo.row(3) << 0.0, 0.0, 0.0, 1.0, 0.0, 0.0;
 
-    P.row(0) << 1.0, 0.0, 0.0, 0.0, 0.0, 0.0;
-    P.row(1) << 0.0, 1.0, 0.0, 0.0, 0.0, 0.0;
-    P.row(2) << 0.0, 0.0, 1.0, 0.0, 0.0, 0.0;
-    P.row(3) << 0.0, 0.0, 0.0, 1.0, 0.0, 0.0;
-    P.row(4) << 0.0, 0.0, 0.0, 0.0, 1.0, 0.0;
-    P.row(5) << 0.0, 0.0, 0.0, 0.0, 0.0, 1.0;
-    P = 1e-9*P;
+    // P.row(0) << 1.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+    // P.row(1) << 0.0, 1.0, 0.0, 0.0, 0.0, 0.0;
+    // P.row(2) << 0.0, 0.0, 1.0, 0.0, 0.0, 0.0;
+    // P.row(3) << 0.0, 0.0, 0.0, 1.0, 0.0, 0.0;
+    // P.row(4) << 0.0, 0.0, 0.0, 0.0, 1.0, 0.0;
+    // P.row(5) << 0.0, 0.0, 0.0, 0.0, 0.0, 1.0;
+    // P << 1e-9*P;
 
-    Vd.row(0) << 1.0, 0.0, 0.0, 0.0, 0.0, 0.0;
-    Vd.row(1) << 0.0, 1.0, 0.0, 0.0, 0.0, 0.0;
-    Vd.row(2) << 0.0, 0.0, 1.0, 0.0, 0.0, 0.0;
-    Vd.row(3) << 0.0, 0.0, 0.0, 1.0, 0.0, 0.0;
-    Vd.row(4) << 0.0, 0.0, 0.0, 0.0, 1.0, 0.0;
-    Vd.row(5) << 0.0, 0.0, 0.0, 0.0, 0.0, 1.0;
-    Vd = 1e-9*Vd;
+    // Vd.row(0) << 1.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+    // Vd.row(1) << 0.0, 1.0, 0.0, 0.0, 0.0, 0.0;
+    // Vd.row(2) << 0.0, 0.0, 1.0, 0.0, 0.0, 0.0;
+    // Vd.row(3) << 0.0, 0.0, 0.0, 1.0, 0.0, 0.0;
+    // Vd.row(4) << 0.0, 0.0, 0.0, 0.0, 1.0, 0.0;
+    // Vd.row(5) << 0.0, 0.0, 0.0, 0.0, 0.0, 1.0;
+    // Vd << 1e-9*Vd;
 
-    Vn.row(0) << 1.0, 0.0, 0.0, 0.0;
-    Vn.row(1) << 0.0, 1.0, 0.0, 0.0;
-    Vn.row(2) << 0.0, 0.0, 1.0, 0.0;
-    Vn.row(3) << 0.0, 0.0, 0.0, 1.0;
-    Vn = 1e-9*Vn;
+    // Vn.row(0) << 1.0, 0.0, 0.0, 0.0;
+    // Vn.row(1) << 0.0, 1.0, 0.0, 0.0;
+    // Vn.row(2) << 0.0, 0.0, 1.0, 0.0;
+    // Vn.row(3) << 0.0, 0.0, 0.0, 1.0;
+    // Vn << 1e-9*Vn;
 
     estimated_states.col(0) << 0.0, 0.0, 0.0, 0.17, 0.0, 0.0;
     // Eigen::Matrix<double, 6, 1> test; 
@@ -88,29 +87,30 @@ class LQRController : public controller_interface::Controller<hardware_interface
 
     // std::cout << estimated_states + test;
 
-    eye.row(0) << 1.0, 0.0, 0.0, 0.0, 0.0, 0.0;
-    eye.row(1) << 0.0, 1.0, 0.0, 0.0, 0.0, 0.0;
-    eye.row(2) << 0.0, 0.0, 1.0, 0.0, 0.0, 0.0;
-    eye.row(3) << 0.0, 0.0, 0.0, 1.0, 0.0, 0.0;
-    eye.row(4) << 0.0, 0.0, 0.0, 0.0, 1.0, 0.0;
-    eye.row(5) << 0.0, 0.0, 0.0, 0.0, 0.0, 1.0;
+    // eye.row(0) << 1.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+    // eye.row(1) << 0.0, 1.0, 0.0, 0.0, 0.0, 0.0;
+    // eye.row(2) << 0.0, 0.0, 1.0, 0.0, 0.0, 0.0;
+    // eye.row(3) << 0.0, 0.0, 0.0, 1.0, 0.0, 0.0;
+    // eye.row(4) << 0.0, 0.0, 0.0, 0.0, 1.0, 0.0;
+    // eye.row(5) << 0.0, 0.0, 0.0, 0.0, 0.0, 1.0;
 
     // std::cout << P << std::endl;
     // std::cout << Vd << std::endl;
     // std::cout << Vn << std::endl;
     // KF2 ------------------
-    Kfgain.row(0) << 0.1081993166682,   0.0210594428820273,  7.73895358028036e-17,    -0.037821054608116;
-    Kfgain.row(1) << 0.0667702367820509,     0.54700296984524,  2.91674736595834e-17,  0.18700518882664;
-    Kfgain.row(2) << 7.75061616517287e-17, 1.69907927076516e-17,0.122015460603355, -3.72178203740761e-17;
-    Kfgain.row(3) << -0.033191152528109,    0.103564880058021, -3.85974683003084e-17,     0.108539442937365;
-    Kfgain.row(4) << 1.92246271248782e-5, -4.39523030933547e-5, -0.000134829373325781,    1.6879287773016e-5;
-    Kfgain.row(5) <<  1.92246271249091e-5, -4.39523030933939e-5,  0.000134829373325788,   1.68792877729602e-5;
 
-    KfA << Amodelo - Kfgain*Cmodelo;
-    KfB = Amodelo; // Just for initializing the values
-    KfB.block(0,0,6,2) = Bmodelo;
+    Kfgain.row(0) <<  0.491170238667083,   0.00375288429980882,  4.25680378109589e-19,  -0.0553164886924014;
+    Kfgain.row(1) <<  0.34157993108342,     0.974178476472573, -3.99323095071199e-19,     0.77025600011628;
+    Kfgain.row(2) <<  3.06222262767131e-19, -3.55327872143084e-21,     0.515320444840736, 9.23744384792761e-20;
+    Kfgain.row(3) <<  -0.00467372896955414,    0.0123228877384941,  6.98500260561216e-20,    0.729644361593931;
+    Kfgain.row(4) <<  6.98127941878135e-5,  -7.29920047589147e-9, -0.000593964960553881, -2.81744532843314e-7;
+    Kfgain.row(5) <<  6.98127941877348e-5,  -7.29920048221736e-9,  0.000593964960555286, -2.81744532801115e-7;
+
+    KfA = Amodelo - Kfgain*Cmodelo;
+    // KfB << Amodelo; // Just for initializing the values
+    KfB.leftCols(2) = Bmodelo;
     KfB.rightCols(4) = Kfgain;
-    kalman_inputs = estimated_states;
+    kalman_inputs.col(0) << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
     // std::cout << kalman_inputs << std::endl << std::endl;
     // std::cout << KfA << std::endl << std::endl;
     // std::cout << KfB << std::endl << std::endl;
@@ -164,21 +164,21 @@ class LQRController : public controller_interface::Controller<hardware_interface
       double robot_x_velocity = wheel_radius/2*(left_wheel_vel + right_wheel_vel); // r/2(thetaL + thetaR)
       double robot_yaw_velocity = wheel_radius/wheel_separation*(right_wheel_vel - left_wheel_vel); // r/d(thetaL - thetaR)
       double windup_limit = 30.0;
-      double input_limit = 1.0;
+      double input_limit = 885;
 
       x_vel_int_error += x_ref - robot_x_velocity;   // get integral of the error
       yaw_vel_int_error += yaw_ref - yaw_vel; // get integral of the error
 
       //Apply anti wind-up
-      if(x_vel_int_error > windup_limit)
-        x_vel_int_error = windup_limit;
-      else if(x_vel_int_error < -windup_limit)
-        x_vel_int_error = -windup_limit;
+      // if(x_vel_int_error > windup_limit)
+      //   x_vel_int_error = windup_limit;
+      // else if(x_vel_int_error < -windup_limit)
+      //   x_vel_int_error = -windup_limit;
 
-      if(yaw_vel_int_error > windup_limit)
-        yaw_vel_int_error = windup_limit;
-      else if(yaw_vel_int_error < -windup_limit)
-        yaw_vel_int_error = -windup_limit;
+      // if(yaw_vel_int_error > windup_limit)
+      //   yaw_vel_int_error = windup_limit;
+      // else if(yaw_vel_int_error < -windup_limit)
+      //   yaw_vel_int_error = -windup_limit;
 
       // Current readings
       current_states.col(0) << robot_x_velocity, pitch_vel, yaw_vel, -pitch_angle - balance_angle_offset;// x_vel_int_error, yaw_vel_int_error;
@@ -205,11 +205,13 @@ class LQRController : public controller_interface::Controller<hardware_interface
       // Pub states
       std_msgs::Float64MultiArray states_msg, inputs_msg, est_states_msg;
       std::vector<double> states = {robot_x_velocity, pitch_vel, yaw_vel, -pitch_angle - balance_angle_offset, x_vel_int_error, yaw_vel_int_error};
-      std::vector<double> est_states = {estimated_states.coeff(0,0),estimated_states.coeff(1,0),estimated_states.coeff(2,0),estimated_states.coeff(3,0),estimated_states.coeff(4,0),estimated_states.coeff(5,0)};
+      std::vector<double> est_states = {estimated_states.coeff(0,0),estimated_states.coeff(1,0),estimated_states.coeff(2,0),estimated_states.coeff(3,0)};
       
       states_msg.data = states;
       est_states_msg.data = est_states;
-      
+      // for (auto i: est_states)
+      //   std::cout << i << ' ';
+      // std::cout << std::endl;
       bbot_est_states_pub_.publish(est_states_msg);
       bbot_states_pub_.publish(states_msg);
 
@@ -221,12 +223,12 @@ class LQRController : public controller_interface::Controller<hardware_interface
       // }
 
       // Apply Saturation to the inputs
-      // for(int i=0;i<2;i++){
-      //   if(system_inputs[i] > input_limit)
-      //     system_inputs[i] = input_limit;
-      //   else if(system_inputs[i] < -input_limit)
-      //     system_inputs[i] = -input_limit;
-      // }
+      for(int i=0;i<2;i++){
+        if(system_inputs(i,0) > input_limit)
+          system_inputs(i,0) = input_limit;
+        else if(system_inputs(i,0) < -input_limit)
+          system_inputs(i,0) = -input_limit;
+      }
 
       left_wheel_joint_.setCommand(system_inputs.coeff(0,0));
       right_wheel_joint_.setCommand(system_inputs.coeff(1,0));
@@ -285,14 +287,14 @@ class LQRController : public controller_interface::Controller<hardware_interface
     Eigen::Matrix<double, 6, 6> Amodelo;
     Eigen::Matrix<double, 6, 2> Bmodelo;
     Eigen::Matrix<double, 4, 6> Cmodelo;
-    Eigen::Matrix<double, 6, 4> KF;
-    Eigen::Matrix<double, 6, 6> P;
-    Eigen::Matrix<double, 6, 6> Vd;
-    Eigen::Matrix<double, 4, 4> Vn;
+    // Eigen::Matrix<double, 10, 4> KF;
+    // Eigen::Matrix<double, 6, 6> P;
+    // Eigen::Matrix<double, 6, 6> Vd;
+    // Eigen::Matrix<double, 4, 4> Vn;
     Eigen::Matrix<double, 6, 1> estimated_states;
-    Eigen::Matrix<double, 4, 1> Ymodelo;
-    Eigen::Matrix<double, 4, 4> auxiliar;
-    Eigen::Matrix<double, 6, 6> eye;
+    // Eigen::Matrix<double, 4, 1> Ymodelo;
+    // Eigen::Matrix<double, 4, 4> auxiliar;
+    // Eigen::Matrix<double, 6, 6> eye;
 
     Eigen::Matrix<double, 6, 4> Kfgain;
     Eigen::Matrix<double, 6, 6> KfA;

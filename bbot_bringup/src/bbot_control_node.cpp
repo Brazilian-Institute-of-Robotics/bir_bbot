@@ -18,6 +18,7 @@
 #define WHEEL_ADDR_PRESENT_VELOCITY 128
 #define WHEEL_ADDR_DRIVE_MODE 		10
 #define WHEEL_BAUDRATE_MEM 8
+#define WHEEL_ADDR_CURRENT_LIMIT 38
 
 // Control table addresses for Legs (MX-106)
 #define LEG_ADDR_TORQUE_ENABLE   	64
@@ -117,6 +118,9 @@ public: //Methods
 			if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to disable torque for Dynamixel ID %d", joint_IDs[i]);}
 			
 			dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_OPERATION_MODE, 16, &dxl_error); // TurnON Current control Mode
+			if (dxl_comm_result != COMM_SUCCESS){ROS_ERROR("Failed to set Current control Mode for Dynamixel ID %d", joint_IDs[i]);}
+
+			dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_CURRENT_LIMIT, 1193, &dxl_error); // TurnON Current control Mode
 			if (dxl_comm_result != COMM_SUCCESS){ROS_ERROR("Failed to set Current control Mode for Dynamixel ID %d", joint_IDs[i]);}
 
 			// dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, joint_IDs[i], WHEEL_BAUDRATE_MEM, 4, &dxl_error); // TurnON Current control Mode
@@ -274,7 +278,7 @@ int main(int argc, char **argv) {
 			continue;
 		}
 		// ros::Duration duration4 = ros::Time::now() - time2;
-		// ROS_INFO("TimesSleep: %f", ros::Time::now().toSec() - time2.toSec());
+		ROS_INFO("TimesSleep: %f", ros::Time::now().toSec() - time2.toSec());
 		time2 = ros::Time::now();
 		// bbot_hardware.read(time); // 0.009152 seg
 		bbot_hardware.write(time); // 0.008461 seg
