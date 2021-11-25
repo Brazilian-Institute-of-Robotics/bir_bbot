@@ -34,7 +34,7 @@ bbot:
     control_period: -1 # seconds = 25 Hz
     wheel_separation: 0.1431  # meters
     wheel_radius: 0.05        # meters
-    balance_angle_offset: 0.17
+    balance_angle_offset: 0.16
     imu_topic: /bbot/imu/data_filtered
     # The first and second line of the K gain matrix
     K_l1: [-0.961008304510787, -0.476939988582031, -0.370035227287944, -2.25496217761648, 0.00827413334675284,  0.136833092153031]
