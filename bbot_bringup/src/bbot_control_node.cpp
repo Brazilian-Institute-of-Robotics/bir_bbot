@@ -192,7 +192,7 @@ public: //Methods
 	void read(const ros::Time &time){
 		int32_t dxl_pos, dxl_vel;
 		// Read wheels states
-		for(size_t i=0; i< 1; i++){
+		for(int i=0; i< 1; i++){
 			dxl_commR_result = packetHandler->read4ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_PRESENT_VELOCITY, (uint32_t *)&dxl_vel, &dxl_error);
 			// dxl_comm_result = packetHandler->read4ByteTx(portHandler, joint_IDs[i], WHEEL_ADDR_PRESENT_VELOCITY);
 			// if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to read velocityTX for Dynamixel ID %d", joint_IDs[i]);}
@@ -200,7 +200,8 @@ public: //Methods
 			// if (dxl_comm_result != COMM_SUCCESS) {ROS_ERROR("Failed to read velocityRX  for Dynamixel ID %d", joint_IDs[i]);}
 			// dxl_comm_result = packetHandler->read4ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_PRESENT_POSITION, (uint32_t *)&dxl_pos, &dxl_error);
 			if (dxl_commR_result != COMM_SUCCESS) {ROS_ERROR("Failed to read position for Dynamixel ID %d", joint_IDs[i]);}
-			vel[i] = (double) (dxl_vel)/0.229*(3.14159/30); 	//Convert raw data to N.m
+			vel[i] = (double) (dxl_vel)*0.229*(3.14159/30); 	//Convert raw data to rad/s
+			// ROS_INFO("W%d = %f", i, vel[i]);
 			// pos[i] = (double) dxl_pos*0.00153398;		//Convert raw data to rad
 		}
 		// for(size_t i=0; i< 1; i++){
