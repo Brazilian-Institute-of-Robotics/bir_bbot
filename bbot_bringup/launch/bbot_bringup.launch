@@ -10,8 +10,4 @@
     <!-- Load imu topics -->
     <include file="$(find mpu6050_driver)/launch/mpu6050_driver_with_filter.launch" ns="/bbot"/>
 
-    <!-- Load Lidar node -->
-    <!-- <include file="$(find hls_lfcd_lds_driver)/launch/hlds_laser.launch">
-        <param name="frame_id" value="lds"/>
-    </include> -->
 </launch>

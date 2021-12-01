@@ -2,11 +2,11 @@
 <robot name="Bbot" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
 <!-- INFO -->
-<!-- Center of Mass height: 0.235 m -->
-<!-- Top leg lengh: 0.1106 m -->
-<!-- Bottom leg lengh: 0.0795 m -->
-<!-- Max alpha: 46º -->
-<!-- Max Betha: 140º -->
+<!-- Center of Mass height: 0.235 m   -->
+<!-- Top leg lengh:         0.1106 m  -->
+<!-- Bottom leg lengh:      0.0795 m  -->
+<!-- Max alpha:             46°       -->
+<!-- Max Betha:             140°      -->
 
 <!-- Dummy Root Link -->
   <link name="base_link"/>

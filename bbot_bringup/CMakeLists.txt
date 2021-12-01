@@ -143,8 +143,6 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(wheel_control src/wheel_control.cpp)
-target_link_libraries(wheel_control ${catkin_LIBRARIES})
 
 add_executable(bbot_control_node src/bbot_control_node.cpp)
 target_link_libraries(bbot_control_node ${catkin_LIBRARIES})
