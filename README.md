@@ -18,10 +18,9 @@ Bbot, or _Balancing Robot_, is a self-balancing autonomous robot project. Our go
 
 ### Dependencies 
 - [ROS] : An open-source robot framework. (**Version == Noetic**)
-- [Trajectory controller](http://wiki.ros.org/joint_trajectory_controller) : Controller for executing joint-space trajectories.
+- [ros_control](http://wiki.ros.org/ros_control) : ROS control interface.
 - [Twist mux](http://wiki.ros.org/twist_mux) : Twist multiplexer, which multiplex several velocity commands (topics) and allows to priorize or disable them (locks).
 - [Teleop twist keyboard](http://wiki.ros.org/teleop_twist_keyboard) : Generic keyboard teleop for twist robots.
-- [BIR Marker Localization](https://github.com/Brazilian-Institute-of-Robotics/bir_marker_localization) : This package was made to help you find your robot with a marker. (**Clone into your src folder**)
 
 # **Table of Contents**
 - [**bir_bbot**](#bir_bbot)
@@ -39,11 +38,11 @@ Bbot, or _Balancing Robot_, is a self-balancing autonomous robot project. Our go
 
 # **File System**
 
-- [doc_resources](https://github.com/Brazilian-Institute-of-Robotics/bir_bbot/tree/feature/final/doc_resources) : Support files, including Jupyter about the control systems of Bbot and images to support the readme.
-- [lqr_controller](https://github.com/Brazilian-Institute-of-Robotics/bir_bbot/tree/feature/final/lqr_controller) : The support package for _bbot_control_. Contains our ROS LQR controller.
-- [bbot_control](https://github.com/Brazilian-Institute-of-Robotics/bir_bbot/tree/feature/final/bbot_control) : Contains the controllers parameters to the robot.
-- [bbot_description](https://github.com/Brazilian-Institute-of-Robotics/bir_bbot/tree/feature/final/bbot_description) : Defines the Bbot URDF, Rviz and meshes.
-- [bbot_bringup](https://github.com/Brazilian-Institute-of-Robotics/bir_bbot/tree/feature/final/bbot_bringup) : Is the real robot bringup package.
+- [doc_resources](https://github.com/Brazilian-Institute-of-Robotics/bir_bbot/tree/real_robot/doc_resources) : Support files, including Jupyter about the control systems of Bbot and images to support the readme.
+- [lqr_controller](https://github.com/Brazilian-Institute-of-Robotics/bir_bbot/tree/real_robot/lqr_controller) : The support package for _bbot_control_. Contains our ROS LQR controller.
+- [bbot_control](https://github.com/Brazilian-Institute-of-Robotics/bir_bbot/tree/real_robot/bbot_control) : Contains the controllers parameters to the robot.
+- [bbot_description](https://github.com/Brazilian-Institute-of-Robotics/bir_bbot/tree/real_robot/bbot_description) : Defines the Bbot URDF, Rviz and meshes.
+- [bbot_bringup](https://github.com/Brazilian-Institute-of-Robotics/bir_bbot/tree/real_robot/bbot_bringup) : Is the real robot bringup package.
 
 # **Installation**
 
@@ -57,9 +56,9 @@ First, lets create a catkin workspace.
 
     $ mkdir -p ~/catkin_ws/src
 
-Then, clone **bir_bbot** inside your workspace source. For bringup, use the branch 'feature/final'
+Then, clone **bir_bbot** inside your workspace source. For bringup, use the branch 'real_robot'
 
-	$ git clone git@github.com:Brazilian-Institute-of-Robotics/bir_bbot.git -b feature/final
+	$ git clone git@github.com:Brazilian-Institute-of-Robotics/bir_bbot.git -b real_robot
 
 Now, just build your catkin workspace.
 
