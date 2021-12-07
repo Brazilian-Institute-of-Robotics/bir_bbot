@@ -76,13 +76,13 @@ class LQRController : public controller_interface::Controller<hardware_interface
     system_I_inputs = system_inputs;
 
     //Set KALMAN FILTER Matrices
-    Amodelo.row(0) <<  9.16290516e-01,  3.75189470e-03,  0.00000000e+00,-6.76620370e-02,  2.76994681e-06,  2.76994681e-06;
-    Amodelo.row(1) <<  6.51498644e-01,  9.74185042e-01,  0.00000000e+00, 1.06890914e+00, -2.15580901e-05, -2.15580901e-05;
-    Amodelo.row(2) <<  0.00000000e+00,  0.00000000e+00,  9.48756646e-01, 0.00000000e+00, -2.36987084e-05,  2.36987084e-05;
-    Amodelo.row(3) <<  4.15071057e-03,  1.23208015e-02,  0.00000000e+00, 1.00675997e+00, -1.37347013e-07, -1.37347013e-07;
-    Amodelo.row(4) <<  0.00000000e+00,  0.00000000e+00,  0.00000000e+00, 0.00000000e+00,  8.44400000e-01,  0.00000000e+00;
-    Amodelo.row(5) <<  0.00000000e+00,  0.00000000e+00,  0.00000000e+00, 0.00000000e+00,  0.00000000e+00,  8.44400000e-01;
-  
+    Amodelo.row(0) << 9.16290516e-01,  3.75189470e-03,  0.00000000e+00, -6.76620370e-02,  2.07746011e-06,  2.07746011e-06;
+    Amodelo.row(1) << 6.51498644e-01,  9.74185042e-01,  0.00000000e+00, 1.06890914e+00, -1.61685676e-05, -1.61685676e-05;
+    Amodelo.row(2) << 0.00000000e+00,  0.00000000e+00,  9.48756646e-01, 0.00000000e+00, -1.77740313e-05,  1.77740313e-05;
+    Amodelo.row(3) << 4.15071057e-03,  1.23208015e-02,  0.00000000e+00, 1.00675997e+00, -1.03010260e-07, -1.03010260e-07;
+    Amodelo.row(4) << 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, 0.00000000e+00,  8.44400000e-01,  0.00000000e+00;
+    Amodelo.row(5) << 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, 0.00000000e+00,  0.00000000e+00,  8.44400000e-01;
+
     Bmodelo.col(0) << 0.0, 0.0, 0.0, 0.0, 1.0, 0.0;
     Bmodelo.col(1) << 0.0, 0.0, 0.0, 0.0, 0.0, 1.0;
 
@@ -94,12 +94,12 @@ class LQRController : public controller_interface::Controller<hardware_interface
     estimated_states.col(0) << 0.0, 0.0, 0.0, 0.17, 0.0, 0.0;
     final_states.col(0) << 0.0, 0.0, 0.0, 0.17, 0.0, 0.0, 0.0, 0.0;
 
-    Kfgain.row(0) << 0.49117022188691,   0.00375288430150991,   5.1418968592974e-21,  -0.0553164886344156;
-    Kfgain.row(1) << 0.341579996792336,     0.974178476465664, -3.25414920929892e-20,    0.770255999843955;
-    Kfgain.row(3) << -1.84183395612296e-21,  1.77051921372965e-21,     0.515319205442692, -1.8446996038017e-22;
-    Kfgain.row(3) << -0.00467372852790142,    0.0123228877384467,  5.00347335366548e-23,    0.729644361591905;
-    Kfgain.row(4) << 3.49063995661211e-6, -3.64960046579066e-10,  -2.96984017336465e-5, -1.40872322476729e-8;
-    Kfgain.row(5) << 3.49063995652432e-6, -3.64960059050986e-10,   2.96984017350333e-5, -1.40872322624841e-8;
+    Kfgain.row(0) <<      0.49117022186851,   0.00375288430151178,  5.75583289487367e-21,  -0.0553164886343522;
+    Kfgain.row(1) <<     0.341579996864384,     0.974178476465656, -3.56113661413267e-20,    0.770255999843656;
+    Kfgain.row(3) << -6.77887436684277e-22,  1.02673453612981e-21,     0.515319204083695,  7.0834524263889e-22;
+    Kfgain.row(3) <<  -0.00467372852741737,    0.0123228877384466,  3.10770302107752e-22,    0.729644361591903;
+    Kfgain.row(4) <<   2.61797996435082e-6, -2.73720031788039e-10,  -2.22738014446146e-5, -1.05654235493194e-8;
+    Kfgain.row(5) <<   2.61797996427498e-6, -2.73720044282855e-10,    2.2273801446606e-5, -1.05654235395279e-8;
 
     KfA = Amodelo - Kfgain*Cmodelo;
     KfB.leftCols(2) = Bmodelo;
@@ -150,7 +150,7 @@ class LQRController : public controller_interface::Controller<hardware_interface
         yaw_vel_int_error = -yaw_windup_limit;
 
       // Current readings
-      current_states.col(0) << robot_x_velocity, pitch_vel, yaw_vel, -pitch_angle - balance_angle_offset; // x_vel_int_error, yaw_vel_int_error;
+      current_states.col(0) << robot_x_velocity, pitch_vel_filtered, yaw_vel, -pitch_angle - balance_angle_offset; // x_vel_int_error, yaw_vel_int_error;
 
       //!KALMAN FILTER Adaptative K
       // estimated_states << Amodelo*estimated_states + Bmodelo*system_inputs;
@@ -175,11 +175,11 @@ class LQRController : public controller_interface::Controller<hardware_interface
       system_I_inputs = -Ki*final_states.bottomRows(2);
       system_inputs = system_P_inputs + system_I_inputs;
 
+      // Control FILTER
       Lpast_inputs.push_front(system_inputs(0,0));
       Lpast_inputs.pop_back();
       Rpast_inputs.push_front(system_inputs(1,0));
       Rpast_inputs.pop_back();
-
       double filtered_valueL = 0.0;
       double filtered_valueR = 0.0;
       for(int i=0;i< filter_size;i++){
@@ -188,12 +188,13 @@ class LQRController : public controller_interface::Controller<hardware_interface
       for(int i=0;i< filter_size;i++){
         filtered_valueR += Rpast_inputs[i];
       }
-
       system_inputs_filtered.col(0) << filtered_valueL/filter_size, filtered_valueR/filter_size;
+      // system_inputs_filtered(0,0) = 0.1*system_inputs(0,0) + 0.9*system_inputs_filtered(0,0); 
+      // system_inputs_filtered(1,0) = 0.1*system_inputs(1,0) + 0.9*system_inputs_filtered(1,0); 
 
       // Pub states
       std_msgs::Float64MultiArray states_msg, inputs_msg, est_states_msg;
-      std::vector<double> states = {robot_x_velocity, pitch_vel, yaw_vel, -pitch_angle - balance_angle_offset, x_vel_int_error, yaw_vel_int_error};
+      std::vector<double> states = {robot_x_velocity, pitch_vel_filtered, yaw_vel, -pitch_angle - balance_angle_offset, x_vel_int_error, yaw_vel_int_error};
       std::vector<double> est_states = {estimated_states.coeff(0,0),estimated_states.coeff(1,0),estimated_states.coeff(2,0),estimated_states.coeff(3,0)};
       
       states_msg.data = states;
@@ -212,9 +213,9 @@ class LQRController : public controller_interface::Controller<hardware_interface
       // Apply Saturation to the inputs
       for(int i=0;i<2;i++){
         if(system_inputs_filtered(i,0) > input_limit)
-          system_inputs(i,0) = input_limit;
+          system_inputs_filtered(i,0) = input_limit;
         else if(system_inputs_filtered(i,0) < -input_limit)
-          system_inputs(i,0) = -input_limit;
+          system_inputs_filtered(i,0) = -input_limit;
       }
 
       left_wheel_joint_.setCommand(system_inputs_filtered.coeff(0,0));
@@ -238,7 +239,10 @@ class LQRController : public controller_interface::Controller<hardware_interface
     tf::Matrix3x3(quat_angle).getRPY(roll_angle,pitch_angle, yaw_angle);
     roll_vel = data->angular_velocity.x;
     pitch_vel = -1*data->angular_velocity.y; //todo
+    pitch_vel_filtered = 0.4*pitch_vel + 0.6*pitch_vel_filtered;
     yaw_vel = data->angular_velocity.z;
+
+    // pitch_angle_filtered = 0.4*pitch_angle + 0.6*pitch_angle_filtered;
   }
 
   // Save user commands info
@@ -292,10 +296,12 @@ class LQRController : public controller_interface::Controller<hardware_interface
 
     double roll_angle = 0.0;
     double pitch_angle = 0.0;
+    double pitch_angle_filtered = 0.0;
     double yaw_angle = 0.0;
 
     double roll_vel = 0.0;
     double pitch_vel = 0.0;
+    double pitch_vel_filtered = 0.0;
     double yaw_vel = 0.0;
 
     double x_vel_int_error = 0.0;
