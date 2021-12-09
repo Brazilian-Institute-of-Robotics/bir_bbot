@@ -170,7 +170,7 @@ public: //Methods
 		int32_t dxl_pos, dxl_vel;
 
 		// Read wheels states
-		for(int i=0; i< 1; i++){
+		for(int i=0; i< 2; i++){
 			dxl_commR_result = packetHandler->read4ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_PRESENT_VELOCITY, (uint32_t *)&dxl_vel, &dxl_error);
 			if (dxl_commR_result != COMM_SUCCESS) {ROS_ERROR("Failed to read position for Dynamixel ID %d", joint_IDs[i]);}
 			vel[i] = (double) (dxl_vel)*0.229*(3.14159/30); 	//Convert raw data to rad/s
