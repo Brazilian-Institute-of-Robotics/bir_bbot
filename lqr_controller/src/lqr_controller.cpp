@@ -131,7 +131,7 @@ class LQRController : public controller_interface::Controller<hardware_interface
 
       double robot_x_velocity = wheel_radius/2*(left_wheel_vel + right_wheel_vel);                  // r/2(thetaL + thetaR)
       double robot_yaw_velocity = wheel_radius/wheel_separation*(right_wheel_vel - left_wheel_vel); // r/d(thetaL - thetaR)
-      double x_windup_limit = 100.0;
+      double x_windup_limit = 5000.0;
       double yaw_windup_limit = 5000.0;
       double input_limit = 885;
 
@@ -139,15 +139,15 @@ class LQRController : public controller_interface::Controller<hardware_interface
       yaw_vel_int_error += yaw_ref - yaw_vel;        // get integral of the error
 
       // Apply anti wind-up
-      if(x_vel_int_error > x_windup_limit)
-        x_vel_int_error = x_windup_limit;
-      else if(x_vel_int_error < -x_windup_limit)
-        x_vel_int_error = -x_windup_limit;
+      // if(x_vel_int_error > x_windup_limit)
+      //   x_vel_int_error = x_windup_limit;
+      // else if(x_vel_int_error < -x_windup_limit)
+      //   x_vel_int_error = -x_windup_limit;
 
-      if(yaw_vel_int_error > yaw_windup_limit)
-        yaw_vel_int_error = yaw_windup_limit;
-      else if(yaw_vel_int_error < -yaw_windup_limit)
-        yaw_vel_int_error = -yaw_windup_limit;
+      // if(yaw_vel_int_error > yaw_windup_limit)
+      //   yaw_vel_int_error = yaw_windup_limit;
+      // else if(yaw_vel_int_error < -yaw_windup_limit)
+      //   yaw_vel_int_error = -yaw_windup_limit;
 
       // Current readings
       current_states.col(0) << robot_x_velocity, pitch_vel_filtered, yaw_vel, -pitch_angle - balance_angle_offset; // x_vel_int_error, yaw_vel_int_error;
