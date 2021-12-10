@@ -145,7 +145,7 @@ public: //Methods
 		// Write wheels pwm
 		for(size_t i=0; i< 2; i++){
 			pwm = (int16_t) std::round(lqr_reconfigure*cmd[i]);
-			ROS_INFO("lqr_reconfigure: %f cmd:  %f value: %f int: %d", lqr_reconfigure, cmd[i], lqr_reconfigure*cmd[i], pwm);
+			// ROS_INFO("lqr_reconfigure: %f cmd:  %f value: %f int: %d", lqr_reconfigure, cmd[i], lqr_reconfigure*cmd[i], pwm);
 			
 			dxl_commW_result = packetHandler->write2ByteTxRx(portHandler, joint_IDs[i], WHEEL_ADDR_GOAL_PWM, pwm, &dxl_error);
 			if (dxl_commW_result != COMM_SUCCESS) {ROS_ERROR("Failed to write pwm for Dynamixel ID %d", joint_IDs[i]);}
