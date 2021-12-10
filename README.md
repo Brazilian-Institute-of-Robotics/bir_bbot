@@ -20,8 +20,7 @@ Bbot, or _Balancing Robot_, is a self-balancing autonomous robot project. Our go
 - [ROS] : An open-source robot framework. (**Version == Noetic**)
 - [Trajectory controller](http://wiki.ros.org/joint_trajectory_controller) : Controller for executing joint-space trajectories.
 - [Twist mux](http://wiki.ros.org/twist_mux) : Twist multiplexer, which multiplex several velocity commands (topics) and allows to priorize or disable them (locks).
-- [Teleop twist keyboard](http://wiki.ros.org/teleop_twist_keyboard) : Generic keyboard teleop for twist robots.
-- [BIR Marker Localization](https://github.com/Brazilian-Institute-of-Robotics/bir_marker_localization) : This package was made to help you find your robot with a marker. (**Clone into your src folder**)
+- [Teleop twist joy](http://wiki.ros.org/teleop_twist_joy) : Generic joystick teleop for twist robots.
 
 # **Table of Contents**
 - [**bir_bbot**](#bir_bbot)
@@ -77,6 +76,10 @@ Don't forget to source your workspace before using it.
 Just Run
 
 	$ roslaunch bbot_bringup bbot_bringup.launch
+
+The teleop launch is configured for a Xbox joystick. Just plug it in Bbot or another machine connected to the Bbot ROS Master and call the following launch from the same machine.
+
+    $ roslaunch bbot_bringup bbot_teleop.launch
 
 ![](/doc_resources/bbot.gif)
 * _Real model of Bbot._
