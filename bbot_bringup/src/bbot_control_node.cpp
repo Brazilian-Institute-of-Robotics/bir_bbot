@@ -28,7 +28,7 @@
 #define PROTOCOL_VERSION      		2.0             	// Default Protocol version of DYNAMIXEL X series.
 
 // Default setting
-// RIGHT WHEEL ID   12 | LEFT_WHEEL_ID    22
+
 #define BAUDRATE              		4500000          	// 4.5Mbps
 #define DEVICE_NAME           		"/dev/ttyUSB0" 		// Port for communication with dynamixels
 
@@ -151,7 +151,6 @@ public: //Methods
 			if (dxl_commW_result != COMM_SUCCESS) {ROS_ERROR("Failed to write pwm for Dynamixel ID %d", joint_IDs[i]);}
 		}
 
-		//TODO Write legs angular position
 		if(!initLegs){
 			for(size_t i=2; i< 6; i++){
 				if(joint_IDs[i]%2==0)
@@ -231,24 +230,18 @@ int main(int argc, char **argv) {
 
 	while (ros::ok()) {
 		ros::Time time = ros::Time::now();
-		bbot_hardware.read(time); // 0.009152 seg
-		dur = ros::Time::now() - time;
-		// ROS_INFO("READ: %f", dur.toSec());
+		bbot_hardware.read(time);
 		
 		tim = ros::Time::now();
-		cm.update(ros::Time::now(), time - last_time); // 0.000124 seg
-		dur = ros::Time::now() - tim;
-		// ROS_INFO("UPDATE: %f", dur.toSec());
+		cm.update(ros::Time::now(), time - last_time);
 
 		while(ros::Time::now().toSec() - time2.toSec() < 0.0125){
 			continue;
 		}
 
-		ROS_INFO("TimesSleep: %f", ros::Time::now().toSec() - time2.toSec());
+		// ROS_INFO("TimesSleep: %f", ros::Time::now().toSec() - time2.toSec());
 		time2 = ros::Time::now();
-		bbot_hardware.write(time); // 0.008461 seg
-		dur = ros::Time::now() - time2;
-		// ROS_INFO("WRITE: %f", dur.toSec());
+		bbot_hardware.write(time);
 
 		last_time = time;
 	}

@@ -189,8 +189,6 @@ class LQRController : public controller_interface::Controller<hardware_interface
         filtered_valueR += Rpast_inputs[i];
       }
       system_inputs_filtered.col(0) << filtered_valueL/filter_size, filtered_valueR/filter_size;
-      // system_inputs_filtered(0,0) = 0.1*system_inputs(0,0) + 0.9*system_inputs_filtered(0,0); 
-      // system_inputs_filtered(1,0) = 0.1*system_inputs(1,0) + 0.9*system_inputs_filtered(1,0); 
 
       // Pub states
       std_msgs::Float64MultiArray states_msg, inputs_msg, est_states_msg;
@@ -202,13 +200,6 @@ class LQRController : public controller_interface::Controller<hardware_interface
       
       bbot_est_states_pub_.publish(est_states_msg);
       bbot_states_pub_.publish(states_msg);
-
-      // std::vector<double> system_inputs = {0.0, 0.0};
-      // for(int i=0;i<2;i++){
-      //   for(int j=0;j<6;j++){ //TODO WITHOUT INTEGRAL ACTION
-      //     system_inputs[i] += Klqr.coeff(i,j)*current_states.coeff(j,0);
-      //   }
-      // }
 
       // Apply Saturation to the inputs
       for(int i=0;i<2;i++){
@@ -224,7 +215,7 @@ class LQRController : public controller_interface::Controller<hardware_interface
       inputs_msg.data = pub_inputs;
       bbot_inputs_pub_.publish(inputs_msg);
 
-      // ROS_INFO("Pub %f", time.toSec() - last_pub_time);
+
       last_pub_time = time.toSec();
     }
   }
