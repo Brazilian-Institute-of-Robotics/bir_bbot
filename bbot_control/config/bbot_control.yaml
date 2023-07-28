@@ -1,0 +1,36 @@
+bbot:
+  # Publish all joint states -----------------------------------
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 100  
+  
+  # Position Controllers ---------------------------------------    
+  base2right_top_leg_position_controller:
+    type: position_controllers/JointPositionController
+    joint: base2right_top_leg
+
+  base2left_top_leg_position_controller:
+    type: position_controllers/JointPositionController
+    joint: base2left_top_leg
+  
+  right_top_leg2bottom_leg_position_controller:
+    type: position_controllers/JointPositionController
+    joint: right_top_leg2bottom_leg
+
+  left_top_leg2bottom_leg_position_controller:
+    type: position_controllers/JointPositionController
+    joint: left_top_leg2bottom_leg
+
+  # LQR Controller ---------------------------------------    
+  mobile_base_controller:
+    type: lqr_controller/LQRController
+    left_wheel: left_bottom_leg2wheel
+    right_wheel: right_bottom_leg2wheel
+    control_period: -1          # seconds = 80 Hz
+    wheel_separation: 0.1431    # meters
+    wheel_radius: 0.05          # meters
+    balance_angle_offset: 0.168
+    imu_topic: /bbot/imu/data_filtered
+    # The first and second line of the K gain matrix
+    K_l1: [-9944.59517347187, -2612.49043116389, -42.4871952628914, -23193.7652239634, 0.0990290859936202, 0.0895771420619861, 2.93742671095552,   2.2714152043703]
+    K_l2: [-9944.59517347188, -2612.49043116389,  42.4871952628977, -23193.7652239634,  0.089577142061986, 0.0990290859936201, 2.93742671095645, -2.27141520437046]

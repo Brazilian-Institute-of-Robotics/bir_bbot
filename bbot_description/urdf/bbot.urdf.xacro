@@ -1,0 +1,530 @@
+<?xml version="1.0" ?>
+<robot name="Bbot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<!-- INFO -->
+<!-- Center of Mass height: 0.235 m   -->
+<!-- Top leg lengh:         0.1106 m  -->
+<!-- Bottom leg lengh:      0.0795 m  -->
+<!-- Max alpha:             46°       -->
+<!-- Max Betha:             140°      -->
+
+<!-- Dummy Root Link -->
+  <link name="base_link"/>
+    
+  <joint name="base_link_to_base" type="fixed">
+    <parent link="base_link"/>
+    <child link="main_base"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 1.57" />
+  </joint>
+
+<!-- LINKS -->
+    <link name="main_base">
+      <inertial>
+        <origin xyz="0.02228462 0.01906787 0.05671578" rpy="0.0 0 0" />
+        <mass value="1.171185"/>
+        <inertia ixx="0.00311204" ixy="0.0" ixz="0.0" iyy="0.00402789" iyz="0.0" izz="0.00411583" />
+      </inertial>
+      <visual>
+        <origin xyz="0.0 0.0 0.0" rpy="1.57 0 0" />
+        <geometry>
+          <mesh filename="package://bbot_description/meshes/visual/base.dae"  scale="1 1 1"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0.023030 0.017698 0.066007" rpy="0.0 0 0" />
+        <geometry>
+          <!-- <mesh filename="package://bbot_description/meshes/collision/base.stl"  scale="1 1 1"/> -->
+          <box size="0.174214 0.159979 0.096376" />
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="right_top_leg">
+      <inertial>
+        <origin xyz="0.032 0 -0.072" />
+        <mass value="0.207"/>
+        <inertia ixx="0.00022502" ixy="0.0" ixz="0.0" iyy="0.00025945" iyz="0.0" izz="0.00009025" />
+      </inertial>
+      <visual>
+        <origin xyz="-0.025 -0.021 -0.18" rpy="-1.57 -1.57 0" />
+        <geometry>
+          <mesh filename="package://bbot_description/meshes/visual/right_top_leg.dae"  scale="1 1 1"/>
+        </geometry>
+      </visual>
+      <collision>
+        <!-- <origin xyz="-0.025 -0.021 -0.18" rpy="-1.57 -1.57 0" /> MESH ORIGIN -->
+        <origin xyz="0.031 0 -0.055" rpy="0 0 0" />
+        <geometry>
+          <!-- <mesh filename="package://bbot_description/meshes/collision/right_top_leg.stl"  scale="1 1 1"/> -->
+           <box size="0.065065 0.048933 0.138999" />
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="left_top_leg">
+      <inertial>
+        <origin xyz="-0.032 0 -0.072" />
+        <mass value="0.207"/>
+        <inertia ixx="0.00022502" ixy="0.0" ixz="0.0" iyy="0.00025945" iyz="0.0" izz="0.00009025" />
+      </inertial>
+      <visual>
+        <origin xyz="-0.031 -0.021 -0.19" rpy="-1.57 -1.57 0" />
+        <geometry>
+          <mesh filename="package://bbot_description/meshes/visual/left_top_leg.dae"  scale="1 1 1"/>
+        </geometry>
+      </visual>
+      <collision>
+        <!-- <origin xyz="-0.031 -0.021 -0.19" rpy="-1.57 -1.57 0" /> MESH ORIGIN -->
+        <origin xyz="-0.031 0 -0.055" rpy="0 0 0" />
+        <geometry>
+          <!-- <mesh filename="package://bbot_description/meshes/collision/left_top_leg.stl"  scale="1 1 1"/> -->
+          <box size="0.065065 0.048933 0.138999" />
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="right_bottom_leg">
+      <inertial>
+        <origin xyz="0.032 0 -0.06525" />
+        <mass value="0.334"/>
+        <inertia ixx="0.0003166" ixy="0.0" ixz="0.0" iyy="0.00032649" iyz="0.0" izz="0.00014826" />
+      </inertial>
+      <visual>
+        <origin xyz="0.0275 0.027 -0.06386394" rpy="-1.57 -1.57 0" />
+        <geometry>
+          <mesh filename="package://bbot_description/meshes/visual/right_bottom_leg.dae"  scale="1 1 1"/>
+        </geometry>
+      </visual>
+      <collision>
+        <!-- <origin xyz="-0.025 -0.021 -0.0695" rpy="-1.57 -1.57 0" />  MESH ORIGIN-->
+        <origin xyz="0.03013079 0 -0.065" rpy="0 0 0" />
+        <geometry>
+          <!-- <mesh filename="package://bbot_description/meshes/collision/right_bottom_leg.stl"  scale="1 1 1"/> -->
+          <box size="0.040031 0.054258 0.071798" />
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="left_bottom_leg">
+      <inertial>
+        <origin xyz="-0.032 0 -0.06525" />
+        <mass value="0.334"/>
+        <inertia ixx="0.0003166" ixy="0.0" ixz="0.0" iyy="0.00032649" iyz="0.0" izz="0.00014826" />
+      </inertial>
+      <visual>
+        <origin xyz="-0.0292 0.027 -0.06867645" rpy="1.57 -1.57 0" />
+        <geometry>
+          <mesh filename="package://bbot_description/meshes/visual/left_bottom_leg.dae"  scale="1 1 1"/>
+        </geometry>
+      </visual>
+      <collision>
+        <!-- <origin xyz="-0.031 -0.021 -0.0795" rpy="-1.57 -1.57 0" /> MESH ORIGIN -->
+        <origin xyz="-0.02825 0 -0.065" rpy="0 0 0" />
+        <geometry>
+          <!-- <mesh filename="package://bbot_description/meshes/collision/left_bottom_leg.stl"  scale="1 1 1"/> -->
+          <box size="0.040031 0.054258 0.071798" />
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="right_wheel">
+      <inertial>
+        <origin xyz="0 0 0" />
+        <mass value="0.303077"/>
+        <inertia ixx="0.0002521" ixy="0.0" ixz="0.0" iyy="0.00014179" iyz="0.0" izz="0.00014098" />
+      </inertial>
+      <visual>
+        <origin xyz="-0.019 0.0095 0.021" rpy="0 0 1.57" />
+        <geometry>
+          <mesh filename="package://bbot_description/meshes/visual/right_wheel.dae"  scale="1 1 1"/>
+        </geometry>
+      </visual>
+      <collision>
+        <!-- <origin xyz="-0.019 0.009 0.021" rpy="0 0 1.57" /> MESH ORIGIN -->
+        <origin xyz="-0.002 -0.0003 0" rpy="1.57 0 1.57" />
+        <geometry>
+          <!-- <mesh filename="package://bbot_description/meshes/collision/right_wheel.stl"  scale="1 1 1"/> -->
+          <cylinder radius="0.05" length="0.03"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="left_wheel">
+      <inertial>
+        <origin xyz="0 0 0"/>
+        <mass value="0.303077"/>
+        <inertia ixx="0.0002521" ixy="0.0" ixz="0.0" iyy="0.00014179" iyz="0.0" izz="0.00014098" />
+      </inertial>
+      <visual>
+        <origin xyz="-0.037 0.0 -0.021" rpy="0 0 -1.57" />
+        <geometry>
+          <mesh filename="package://bbot_description/meshes/visual/left_wheel.dae"  scale="1 1 1"/>
+        </geometry>
+      </visual>
+      <collision>
+        <!-- <origin xyz="-0.037 0.0 -0.021" rpy="0 0 -1.57" /> MESH ORIGIN -->
+        <origin xyz="0.002 -0.0003 0" rpy="1.57 0 1.57" />
+        <geometry>
+          <!-- <mesh filename="package://bbot_description/meshes/collision/left_wheel.stl"  scale="1 1 1"/> -->
+          <cylinder radius="0.05" length="0.03"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="lds">
+      <inertial>
+        <origin xyz="0 0 0" />
+        <mass value="0.125"/>
+        <inertia ixx="0.00005831" ixy="0.0" ixz="0.0" iyy="0.00006409" iyz="0.0" izz="0.00011932" />
+      </inertial>
+      <visual>
+        <origin xyz="0.0 0.01 0.0" rpy="-1.57 -1.57 0" />
+        <geometry>
+          <mesh filename="package://bbot_description/meshes/visual/LDS.dae"  scale="1 1 1"/>
+        </geometry>
+      </visual>
+      <collision>
+        <!-- <origin xyz="0.022746 0.022746 0.137604" rpy="-1.57 -1.57 0" /> MESH ORIGIN -->
+        <origin xyz=" -0.02 0.0 0.025" rpy="1.57 0 0" />
+        <geometry>
+          <!-- <mesh filename="package://bbot_description/meshes/collision/LDS.stl"  scale="1 1 1"/> -->
+          <box size="0.069747 0.103263 0.038782" />
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="RspCameraV2">
+      <inertial>
+        <origin xyz="0 0 0" />
+        <mass value="0.003"/>
+        <inertia ixx="1.4e-7" ixy="0.0" ixz="0.0" iyy="2.4e-7" iyz="0.0" izz="1.2e-7" />
+      </inertial>
+      <visual>
+        <origin xyz="0.023 0.036 -0.15" rpy="0 0 -1.57" />
+        <geometry>
+          <mesh filename="package://bbot_description/meshes/visual/RspCameraV2.dae"  scale="1 1 1"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="-0.0 -0.0 0.0" rpy="0 0 0" />
+        <geometry>
+          <!-- <mesh filename="package://bbot_description/meshes/collision/RspCameraV2.stl"  scale="1 1 1"/> -->
+          <box size="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+    </link>
+
+<!-- JOINTS -->
+    <joint name="base2right_top_leg" type="revolute">
+      <parent link="main_base"/>
+      <child link="right_top_leg"/>
+      <origin xyz="-0.055 0.021 0.0" rpy="0.6545 0 0" /> <!-- Previous 0.656 0.3927 -->
+      <axis xyz="1 0 0" />
+      <limit velocity="6.5" effort="1000" lower="-3.14" upper="3.14" />
+      <dynamics damping="0.1" friction="0.0" />
+    </joint>
+
+    <joint name="base2left_top_leg" type="revolute">
+      <parent link="main_base"/>
+      <child link="left_top_leg"/>
+      <origin xyz="0.101 0.021 0.0" rpy="0.6545 0 0" />
+      <axis xyz="1 0 0" />
+      <limit velocity="6.5" effort="1000" lower="-3.14" upper="3.14" />
+      <dynamics damping="0.1" friction="0.0" />
+    </joint>
+
+    <joint name="right_top_leg2bottom_leg" type="revolute">
+      <parent link="right_top_leg"/>
+      <child link="right_bottom_leg"/>
+      <origin xyz="-0.0 0.0 -0.1105" rpy="-1.665 0 0" /> <!-- Previous -1.67 -0.9547-->
+      <axis xyz="1 0 0" />
+      <limit velocity="6.5" effort="1000" lower="-3.14" upper="3.14" />
+      <dynamics damping="0.1" friction="0.0" />
+    </joint>
+
+    <joint name="left_top_leg2bottom_leg" type="revolute">
+      <parent link="left_top_leg"/>
+      <child link="left_bottom_leg"/>
+      <origin xyz="-0.0 0.0 -0.1105" rpy="-1.665 0 0" />
+      <axis xyz="1 0 0" />
+      <limit velocity="6.5" effort="1000" lower="-3.14" upper="3.14" />
+      <dynamics damping="0.1" friction="0.0" />
+    </joint>
+
+    <joint name="right_bottom_leg2wheel" type="continuous">
+      <parent link="right_bottom_leg"/>
+      <child link="right_wheel"/>
+      <origin xyz="-0.0062 0.0 -0.0795" rpy="0 0 0" />
+      <axis xyz="1 0 0" />
+      <limit velocity="500" effort="1000"/> <!--lower="-2.0944" upper="2.0944"-->
+      <dynamics damping="0.01" friction="0.0" />
+    </joint>
+
+    <joint name="left_bottom_leg2wheel" type="continuous">
+      <parent link="left_bottom_leg"/>
+      <child link="left_wheel"/>
+      <origin xyz="0.0062 0.0 -0.0795" rpy="0 0 0" />
+      <axis xyz="1 0 0" />
+      <limit velocity="500" effort="1000"/> <!--lower="-2.0944" upper="2.0944"-->
+      <dynamics damping="0.01" friction="0.0" />
+    </joint>
+
+    <joint name="base2lds" type="fixed">
+      <parent link="main_base"/>
+      <child link="lds"/>
+      <origin xyz="0.0 0.0 0.140" rpy="1.57 0 3.14" />
+    </joint>
+
+    <joint name="base2cam" type="fixed">
+      <parent link="main_base"/>
+      <child link="RspCameraV2"/>
+      <origin xyz="0.023 -0.03 0.036" rpy="1.57 3.14 0" />
+    </joint>
+
+<!-- TRANSMISSION -->
+  <gazebo>
+    <plugin filename="libgazebo_ros_control.so" name="gazebo_ros_control">
+      <robotNamespace>/bbot</robotNamespace>
+    </plugin>
+  </gazebo>
+
+  <transmission name="trans_base2right_top_leg">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="base2right_top_leg">
+          <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="motor_base2right_top_leg">
+        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+  </transmission>
+
+  <transmission name="trans_base2left_top_leg">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="base2left_top_leg">
+          <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="motor_base2left_top_leg">
+        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+  </transmission>
+
+  <transmission name="trans_right_top_leg2bottom_leg">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="right_top_leg2bottom_leg">
+          <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="motor_right_top_leg2bottom_leg">
+        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+  </transmission>
+
+  <transmission name="trans_left_top_leg2bottom_leg">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="left_top_leg2bottom_leg">
+          <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="motor_left_top_leg2bottom_leg">
+        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+  </transmission>
+
+  <transmission name="trans_right_bottom_leg2wheel">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="right_bottom_leg2wheel">
+          <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="motor_right_bottom_leg2wheel">
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+  </transmission>
+
+  <transmission name="trans_left_bottom_leg2wheel">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="left_bottom_leg2wheel">
+          <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="motor_left_bottom_leg2wheel">
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+  </transmission>
+
+<!-- PARAMETERS -->
+  <gazebo reference="main_base">
+      <mu1>0.5</mu1>
+      <mu2>0.5</mu2>
+  </gazebo>
+  <gazebo reference="right_top_leg">
+      <mu1>0.5</mu1>
+      <mu2>0.5</mu2>
+  </gazebo>
+  <gazebo reference="left_top_leg">
+      <mu1>0.5</mu1>
+      <mu2>0.5</mu2>
+  </gazebo>
+  <gazebo reference="right_bottom_leg">
+      <mu1>0.5</mu1>
+      <mu2>0.5</mu2>
+  </gazebo>
+  <gazebo reference="left_bottom_leg">
+      <mu1>0.5</mu1>
+      <mu2>0.5</mu2>
+  </gazebo>
+  <gazebo reference="right_wheel">
+      <mu1>0.8</mu1> 
+      <mu2>0.8</mu2> 
+  </gazebo>
+  <gazebo reference="left_wheel">
+      <mu1>0.8</mu1>
+      <mu2>0.8</mu2>
+  </gazebo>
+  <gazebo reference="lds">
+      <mu1>0.5</mu1>
+      <mu2>0.5</mu2>
+  </gazebo>
+  <gazebo reference="RspCameraV2">
+      <mu1>0.5</mu1>
+      <mu2>0.5</mu2>
+  </gazebo>
+
+
+<!-- SENSOR -->
+  <!-- Camera -->
+    <link name="camera_frame_gazebo"/>
+    <joint name="camera_joint" type="fixed">
+        <parent link="RspCameraV2" />
+        <child link="camera_frame_gazebo" />
+        <origin xyz="0 0 0" rpy="1.57 -1.57 0" />
+    </joint>
+    <gazebo reference="camera_frame_gazebo">
+      <sensor type="camera" name="raspberry_cam">
+            <visualize>0</visualize>
+            <update_rate>30.0</update_rate>
+            <camera name="raspberry_cam">
+              <horizontal_fov>1.0472</horizontal_fov>
+              <image>
+                <width>1920</width>
+                <height>1080</height>
+                <format>R8G8B8</format>
+              </image>
+              <clip>
+                <near>0.02</near>
+                <far>300</far>
+              </clip>
+              <noise>
+                <type>gaussian</type>
+                <mean>0.0</mean>
+                <stddev>0.00</stddev>
+              </noise>
+            </camera>
+            <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+              <alwaysOn>true</alwaysOn>
+              <updateRate>0.0</updateRate>
+              <cameraName>raspberry_cam</cameraName>
+              <imageTopicName>image_raw</imageTopicName>
+              <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+              <frameName>camera_link</frameName>
+              <hackBaseline>0.0</hackBaseline>
+              <distortionK1>0.0</distortionK1>
+              <distortionK2>0.0</distortionK2>
+              <distortionK3>0.0</distortionK3>
+              <distortionT1>0.0</distortionT1>
+              <distortionT2>0.0</distortionT2>
+            </plugin>
+          </sensor>
+    </gazebo>
+    <!-- Optical frame -->
+      <!-- <link name="camera_optical_frame"/>
+      <joint name="gazebo_optical_joint" type="fixed">
+          <parent link="camera_frame_gazebo" />
+          <child link="camera_optical_frame" />
+          <origin xyz="0.0 0.0 0.0" rpy="-1.5708 0 -1.5708" />
+      </joint> -->
+  
+  <!-- LiDAR -->
+    <link name="lds_frame_gazebo"/>
+    <joint name="lds_joint" type="fixed">
+        <parent link="lds" />
+        <child link="lds_frame_gazebo" />
+        <origin xyz="-0.023 -0.007 0" rpy="1.57 1.57 3.14" />
+    </joint>
+    <gazebo reference="lds_frame_gazebo">
+      <sensor type="gpu_ray" name="lds_sensor">
+        <pose>0 0 0 0 0 0</pose>
+        <visualize>false</visualize>
+        <update_rate>40</update_rate>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>720</samples>
+              <resolution>1</resolution>
+              <min_angle>-3.14</min_angle>
+              <max_angle>3.14</max_angle>
+            </horizontal>
+          </scan>
+          <range>
+            <min>0.12</min>
+            <max>1.2</max>
+            <resolution>0.01</resolution>
+          </range>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.01</stddev>
+          </noise>
+        </ray>
+        <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_gpu_laser.so">
+          <topicName>/bbot/laser/scan</topicName>
+          <frameName>lds_frame_gazebo</frameName>
+        </plugin>
+      </sensor>
+    </gazebo>
+
+  <!-- IMU -->
+    <link name="imu_frame_gazebo"/>
+    <joint name="imu_joint" type="fixed">
+        <parent link="main_base" />
+        <child link="imu_frame_gazebo" />
+        <origin xyz="0.02075 0.01765 0.0326" rpy="0 0 0" />
+        <!-- <origin xyz="-0.01765 0.02075 0.0326" rpy="0 0 0" /> -->
+    </joint>
+    <gazebo reference="imu_frame_gazebo">
+      <gravity>true</gravity>
+      <sensor name="imu_sensor" type="imu">
+        <always_on>true</always_on>
+        <update_rate>100</update_rate>
+        <visualize>true</visualize>
+        <pose>0 0 0 0 0 0</pose>
+        <topic>__default_topic__</topic>
+        <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+          <topicName>/bbot/imu</topicName>
+          <bodyName>imu_frame_gazebo</bodyName>
+          <updateRateHZ>100.0</updateRateHZ>
+          <gaussianNoise>0.0</gaussianNoise>
+          <xyzOffset>0 0 0</xyzOffset>
+          <rpyOffset>0 0 0</rpyOffset>
+          <frameName>imu_frame_gazebo</frameName>
+          <initialOrientationAsReference>false</initialOrientationAsReference>
+        </plugin>
+      </sensor>
+    </gazebo>
+
+    <!-- <gazebo reference="imu_frame_gazebo">
+      <plugin filename="libgazebo_ros_imu.so" name="imu_plugin">
+        <alwaysOn>true</alwaysOn>
+        <bodyName>main_base</bodyName>
+        <updateRate>50</updateRate>
+        <serviceName>/bbot/imu_service</serviceName>
+        <topicName>/bbot/imu</topicName>
+        <gaussianNoise>0</gaussianNoise>
+        <xyzOffset>0 0 0</xyzOffset>
+        <rpyOffset>0 0 0</rpyOffset>
+      </plugin>     
+    </gazebo>  -->
+
+</robot>
